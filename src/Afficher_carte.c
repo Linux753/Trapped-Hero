@@ -80,14 +80,26 @@ void quitterSDL(CarteSDL *carteSDL){
     if(carteSDL->vide!=NULL){
         SDL_DestroyTexture(carteSDL->vide);
     }
-    if(carteSDL->chemin!=NULL){
-        SDL_DestroyTexture(carteSDL->chemin);
+    if(carteSDL->chemin[0]!=NULL){
+        SDL_DestroyTexture(carteSDL->chemin[0]);
+    }
+    if(carteSDL->chemin[1]!=NULL){
+        SDL_DestroyTexture(carteSDL->chemin[1]);
+    }
+    if(carteSDL->chemin[2]!=NULL){
+        SDL_DestroyTexture(carteSDL->chemin[2]);
     }
     if(carteSDL->porte!=NULL){
         SDL_DestroyTexture(carteSDL->porte);
     }
-    if(carteSDL->mur!=NULL){
-        SDL_DestroyTexture(carteSDL->mur);
+    if(carteSDL->mur[0]!=NULL){
+        SDL_DestroyTexture(carteSDL->mur[0]);
+    }
+    if(carteSDL->mur[1]!=NULL){
+        SDL_DestroyTexture(carteSDL->mur[1]);
+    }
+    if(carteSDL->mur[2]!=NULL){
+        SDL_DestroyTexture(carteSDL->mur[2]);
     }
     if(carteSDL->escalierHaut!=NULL){
         SDL_DestroyTexture(carteSDL->escalierHaut);
@@ -363,82 +375,6 @@ CarteSDL *initialiserCarteSDL(){
         return NULL;
     }
     return carteSDL;
-}
-int afficherCarte(Carte *carte , CarteSDL *carteSDL){
-   // printf("afficherCarte");
-    SDL_Rect rect;
-    int i=0 , compteur=0 , y=0;
-    SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 0);
-    SDL_RenderClear(carteSDL->renderer);
-    for(i=0; i<=(carte->hauteur*carte->largeur)-1; i++){
-        rect.y=y;
-        rect.x=compteur*9;
-        rect.w=9;
-        rect.h=9;
-        switch(carte->terrain[i].type){
-            case VIDE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
-                //printf("  ");
-                break;
-            case CHEMIN :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin , NULL  , &rect );
-                //printf("@ " );
-                break;
-            case MUR:
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur , NULL  , &rect );
-                //printf("[]" );
-                break;
-            //case ESCALIER:
-              //  SDL_SetRenderDrawColor(renderer , 206 , 206 , 206 , 0);
-                ////printf("E ");
-                //break;
-            case MUR_SALLE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur , NULL  , &rect );
-                //printf("##");
-                break;
-            case SOL_SALLE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin , NULL  , &rect );
-                //printf("..");
-                break;
-            case PORTE :
-                if(carte->terrain[i].orientation==HORIZONTALE){
-                    //printf("__");
-                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-                }
-                else if(carte->terrain[i].orientation==VERTICALE){
-                    //printf("| ");
-                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-                }
-                break;
-            case MUR_CHEMIN :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur , NULL  , &rect );
-                //printf("+ ");
-                break;
-        }
-        switch(carte->terrain[i].object){
-            case ESCALIER_HAUT :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->escalierHaut , NULL  , &rect );
-                //printf("+ ");
-                break;
-            case ESCALIER_BAS :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->escalierBas , NULL  , &rect );
-                //printf("+ ");
-                break;
-        }
-        if(compteur==(carte->largeur-1)){
-            compteur=0;
-            //printf("\n");
-            y=y+9;
-        }else{
-            compteur++;
-        }
-    }
-    SDL_RenderPresent(carteSDL->renderer);
-    for(i=0;i<=50;i++){
-        SDL_RenderPresent(carteSDL->renderer);
-        SDL_Delay(500);
-    }
-    return 0;
 }
 int reajusterCadrage(Carte *carte ,int position ,  int windowH,int  windowW , int tileNbW ,int tileNbH ){
     int i=0 , continuer=1;

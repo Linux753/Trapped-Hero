@@ -20,6 +20,7 @@ int main()
         fprintf(stderr , "\nErreur\n");
         return -1;
     }
+    menu(carteSDL);
     carte =generateurCarteAlea(100 , 100 );
     moveCharacter(&carte , carteSDL );
     printf("Dimension carte : \nHauteur = %d\nLargeur = %d\n\nMet un 1 si tu veux générer une autre carte , un 0 pour quitter", carte.hauteur , carte.largeur);
