@@ -20,6 +20,7 @@
 #define ESCALIER_BAS 2
 #define COFFRE 3
 #define TREASOR_OPEN 4
+#define QUIT 100
 #include <SDL2/SDL.h>
 
 typedef struct Terrain Terrain;

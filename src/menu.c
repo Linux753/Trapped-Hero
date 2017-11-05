@@ -86,10 +86,10 @@ void quitterDessinerMenu(SDL_Texture *texture1 , SDL_Texture *texture2){
         SDL_DestroyTexture(texture2);
     }
 }
-int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu){
+int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
+                SDL_Rect *rectQuitter , SDL_Rect *rectJouer ,  int selectQuitter ,int selectJouer ){
     SDL_Texture *quitter=NULL , *jouer=NULL;
     SDL_Color colorfg={0 , 0 , 0 , 255} , colorbg={0 , 0 , 255 , 255};
-    SDL_Rect rectQuitter={0 , 0 , 0 , 0} , rectJouer={0 , 0 , 0 , 0};
     *menu=SDL_CreateTexture(carteSDL->renderer  , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , rectMenu->w , rectMenu->h);
     if(menu==NULL){
         fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
@@ -101,26 +101,27 @@ int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu){
         quitterDessinerMenu(quitter , jouer);
         return -1;
     }
+    SDL_RenderClear(carteSDL->renderer);
     SDL_SetRenderDrawColor(carteSDL->renderer , 88 , 41 , 0 , 255);
     SDL_RenderFillRect(carteSDL->renderer , NULL);
-    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Quitter" , 50 , &quitter , &colorfg , NULL)){
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Quit" , 50 , &quitter , &colorfg , NULL)){
         fprintf(stderr , "\nErreur SDL ttf");
         quitterDessinerMenu(quitter , jouer);
         return -1;
     }
-    SDL_QueryTexture(quitter , NULL , NULL , &rectQuitter.w , &rectQuitter.h);
-    rectQuitter.x=rectMenu->w/3-rectQuitter.w/2;
-    rectQuitter.y=rectMenu->h/2-rectQuitter.h/2;
-    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Jouer" , 50 , &jouer , &colorfg , NULL)){
+    SDL_QueryTexture(quitter , NULL , NULL , &rectQuitter->w , &rectQuitter->h);
+    rectQuitter->x=rectMenu->w/3-rectQuitter->w/2;
+    rectQuitter->y=rectMenu->h/2-rectQuitter->h/2;
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Play" , 50 , &jouer , &colorfg , NULL)){
         fprintf(stderr , "\nErreur SDL ttf");
         quitterDessinerMenu(quitter , jouer);
         return -1;
     }
-    SDL_QueryTexture(jouer , NULL , NULL , &rectJouer.w , &rectJouer.h);
-    rectJouer.x=(rectMenu->w/3)*2-rectJouer.w/2;
-    rectJouer.y=rectMenu->h/2-rectJouer.h/2;
-    SDL_RenderCopy(carteSDL->renderer , quitter , NULL , &rectQuitter);
-    SDL_RenderCopy(carteSDL->renderer , jouer , NULL , &rectJouer);
+    SDL_QueryTexture(jouer , NULL , NULL , &rectJouer->w , &rectJouer->h);
+    rectJouer->x=(rectMenu->w/3)*2-rectJouer->w/2;
+    rectJouer->y=rectMenu->h/2-rectJouer->h/2;
+    SDL_RenderCopy(carteSDL->renderer , quitter , NULL , rectQuitter);
+    SDL_RenderCopy(carteSDL->renderer , jouer , NULL , rectJouer);
     SDL_SetRenderTarget(carteSDL->renderer , NULL);
     SDL_RenderCopy(carteSDL->renderer , *menu , NULL , rectMenu);
     return 0;
@@ -136,8 +137,10 @@ void quitterMenu(SDL_Texture *texture1 , SDL_Texture *texture2){
 int menu(CarteSDL *carteSDL){
     SDL_Texture *title=NULL , *menu=NULL;
     SDL_Color fontColor={255 , 255 , 255 , 255};
-    SDL_Rect dstRect={0 , 0 , 0 , 0} , rectMenu={0 , 0 , 0 , 0};
-    int w=0 , h=0;
+    SDL_Rect dstRect={0 , 0 , 0 , 0} , rectMenu={0 , 0 , 0 , 0} , rectQuitter={0 , 0 , 0 , 0} , rectJouer={0 , 0 , 0 , 0};
+    SDL_Event event;
+    SDL_Point mousePos={0 , 0};
+    int w=0 , h=0 , continuer=1 , interQuitter=0 , interJouer=0;
     if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Trapped Hero" , 200 , &title , &fontColor , NULL)){
         fprintf(stderr , "\nErreur SDL_ttf\n");
         quitterMenu(title , menu);
@@ -154,13 +157,60 @@ int menu(CarteSDL *carteSDL){
     dstRect.x=(w/2)-(dstRect.w/2);
     dstRect.y=((h-rectMenu.h)/2)-(dstRect.h/2);
     SDL_RenderCopy(carteSDL->renderer  , title , NULL , &dstRect);
-    if(0!=dessinerMenu(carteSDL , &menu , &rectMenu)){
+    if(0!=dessinerMenu(carteSDL , &menu , &rectMenu , &rectQuitter , &rectJouer , 0 , 0)){
         fprintf(stderr , "\nError print menu");
         quitterMenu(title , menu);
         return -1;
     }
+    rectJouer.y=rectJouer.y+(h-rectMenu.h);
+    rectQuitter.y=rectQuitter.y+(h-rectMenu.h);
     SDL_RenderPresent(carteSDL->renderer);
-    SDL_Delay(5000);
+    while(continuer){
+        if(SDL_PollEvent(&event)){
+            switch(event.type){
+                case SDL_KEYDOWN :
+                    switch(event.key.keysym.sym){
+                        case SDLK_c :
+                            continuer=0;
+                            break;
+                    }
+                    break;
+                case SDL_MOUSEMOTION :
+                    SDL_GetMouseState(&mousePos.x , &mousePos.y);
+                    break;
+                case SDL_MOUSEBUTTONDOWN :
+                        if(interJouer==1){
+                            continuer=0;
+                        }
+                        break;
+            }
+        }
+        else{
+            SDL_Delay(50);
+        }
+        if(SDL_PointInRect(&mousePos , &rectJouer)==SDL_TRUE){
+            if(interJouer!=1){
+                interJouer=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer , &rectJouer);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            interJouer=0;
+        }
+        if(SDL_PointInRect(&mousePos , &rectQuitter)==SDL_TRUE){
+            if(interQuitter!=1){
+                interQuitter=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer  , &rectQuitter);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            interQuitter=0;
+        }
+    }
     quitterMenu(title , menu);
     return 0;
 }
