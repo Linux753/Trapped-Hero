@@ -83,34 +83,35 @@ void recenserRoom(Carte* carte){
     carte->position[sauvegardeNumero]=sauvegarde;
     carte->compteur--;
 }
-Carte generateurCarteAlea(int largeur , int hauteur ){
+Carte* generateurCarteAlea(int largeur , int hauteur ){
         //printf("generateurcarteAlea");
-        Carte carte;
-        carte.terrain = malloc(sizeof(Terrain)*(largeur*hauteur));
-        if(carte.terrain==NULL){
+        Carte *carte=NULL;
+        carte=malloc(sizeof(Carte));
+        carte->terrain = malloc(sizeof(Terrain)*(largeur*hauteur));
+        if(carte->terrain==NULL){
             printf("Erreur d'allouage de mémoire");
             exit(1);
         }
-        carte.position=NULL;
-        carte.position=malloc(sizeof(int)*largeur*hauteur);
-        if(carte.position==NULL){
+        carte->position=NULL;
+        carte->position=malloc(sizeof(int)*largeur*hauteur);
+        if(carte->position==NULL){
             printf("Erreur d'allouage de mémoire 2");
             exit(1);
         }
-        carte.blackListRoom=NULL;
-        carte.blackListRoom=malloc((sizeof(int)*(largeur/5)));
-        if(carte.blackListRoom==NULL){
+        carte->blackListRoom=NULL;
+        carte->blackListRoom=malloc((sizeof(int)*(largeur/5)));
+        if(carte->blackListRoom==NULL){
             printf("Erreur d'allouage de mémoire 1");
             exit(1);
         }
-        carte.largeur=largeur;
-        carte.hauteur = hauteur;
-        initialiserCarte(&carte);
-        genererSalleAlea(&carte);
-        fermerSalle(&carte);
-        dessinerPorte(&carte);
-        recenserRoom(&carte);
-        generateObject(&carte);
+        carte->largeur=largeur;
+        carte->hauteur = hauteur;
+        initialiserCarte(carte);
+        genererSalleAlea(carte);
+        fermerSalle(carte);
+        dessinerPorte(carte);
+        recenserRoom(carte);
+        generateObject(carte);
         return carte;
 }
 void quitterGenerateur(Carte *carte){
@@ -121,4 +122,11 @@ void quitterGenerateur(Carte *carte){
     carte->position=NULL;
     free(carte->blackListRoom);
     carte->blackListRoom=NULL;
+}
+void quitterJeu(Carte *carte , CarteSDL *carteSDL){
+    if(carte!=NULL){
+         printf("Dimension carte : \nHauteur = %d\nLargeur = %d\n\nMet un 1 si tu veux générer une autre carte , un 0 pour quitter", carte->hauteur , carte->largeur);
+        quitterGenerateur(carte);
+    }
+    quitterSDL(carteSDL);
 }

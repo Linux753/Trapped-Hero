@@ -515,7 +515,6 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
                 //printf("..");
                 break;
             case PORTE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin , NULL  , &rect );
                 if(carte->terrain[i].orientation==HORIZONTALE){
                     //printf("__");
                     SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );

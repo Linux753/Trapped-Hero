@@ -10,7 +10,7 @@
 #define PORTE 6
 #define MUR_CHEMIN 7
 void initialiserCarte(Carte *carte);
-Carte generateurCarteAlea(int largeur , int hauteur );
+Carte* generateurCarteAlea(int largeur , int hauteur );
 void quitterGenerateur(Carte *carte);
 
 #endif // GENERATEUR_CARTE_ALEA_H_INCLUDED
