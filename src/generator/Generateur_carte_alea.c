@@ -6,6 +6,7 @@
 #include "../../include/Generateur_salle_alea.h"
 #include "../../include/structure.h"
 #include "../../include/Generateur_object.h"
+#include "../../include/manage_SDL.h"
 #include <SDL2/SDL.h>
 
 void initialiserCarte(Carte *carte){

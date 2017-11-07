@@ -55,8 +55,6 @@ void demarrage(CarteSDL* sdlVar){
     loadIMG(sdlVar , "image/logoSDL.png" , &imageSDL);
     SDL_QueryTexture(imageSDL , NULL , NULL , &rectImage1.w , &rectImage1.h);
     SDL_GetWindowSize(sdlVar->window , &w , &h);
-    //rectImage1.w=rectImage1.w*2;
-    //rectImage1.h=rectImage1.h*2;
     rectImage1.x=(w/2)-(rectImage1.w/2);
     rectImage1.y=(h/2)-(rectImage1.h/2);
     ecrireTextSDL(sdlVar , "police/OpenSans-Regular.ttf" , "Created by Linux with :", 80  , &textSDL , &colorFg , NULL );
@@ -78,14 +76,6 @@ void demarrage(CarteSDL* sdlVar){
     SDL_DestroyTexture(textSDL);
     SDL_DestroyTexture(specialThank);
 }
-//void quitterDessinerMenu(SDL_Texture *texture1 , SDL_Texture *texture2){
-//    if(texture1!=NULL){
-//        SDL_DestroyTexture(texture1);
-//    }
-//    if(texture2!=NULL){
-//        SDL_DestroyTexture(texture2);
-//    }
-//}
 int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
                 SDL_Rect *rectQuitter , SDL_Rect *rectJouer ,
                 SDL_Texture **quitter , SDL_Texture **jouer){
@@ -109,7 +99,7 @@ int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
     SDL_QueryTexture(*quitter , NULL , NULL , &rectQuitter->w , &rectQuitter->h);
     rectQuitter->x=rectMenu->w/3-rectQuitter->w/2;
     rectQuitter->y=rectMenu->h/2-rectQuitter->h/2;
-    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Start\nGame" , 50 , jouer , &colorfg , NULL)){
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Play" , 50 , jouer , &colorfg , NULL)){
         fprintf(stderr , "\nErreur SDL ttf");
         return -1;
     }

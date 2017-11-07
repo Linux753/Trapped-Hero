@@ -14,8 +14,6 @@
 #define DROITE 4
 #define HORIZONTALE 5
 #define VERTICALE 6
-#define NORMAL 1
-#define SANS_FUSIONNEMENT 2
 #define ESCALIER_HAUT 1
 #define ESCALIER_BAS 2
 #define COFFRE 3

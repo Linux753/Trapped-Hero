@@ -1,39 +1,9 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/structure.h"
-#include "../include/menu.h"
-
-int loadIMG(CarteSDL *carteSDL , char *file , SDL_Texture** texture ){
-    SDL_Surface *surface=NULL;
-    surface=IMG_Load(file);
-    if(surface==NULL){
-        fprintf(stderr , "Error SDL IMG_Load : %s" , SDL_GetError());
-        return -1;
-    }
-    if(0!=SDL_SetSurfaceBlendMode(surface ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetSurfaceBlendMode : %s" , SDL_GetError());
-        return -1;
-    }
-    *texture=SDL_CreateTextureFromSurface(carteSDL->renderer , surface);
-    if(*texture==NULL){
-        fprintf(stderr , "Error SDL IMG_Load : %s" , SDL_GetError());
-        if(surface!=NULL){
-           SDL_FreeSurface(surface);
-        }
-        return -1;
-    }
-    if(0!=SDL_SetTextureBlendMode(*texture ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        return -1;
-    }
-    if(surface!=NULL){
-        SDL_FreeSurface(surface);
-    }
-    return 0;
-}
+#include "../include/manage_SDL.h"
 int chargerTileOrSprite(CarteSDL *carteSDL , SDL_Texture *image ,
     SDL_Texture **sprite , int x , int y , int sizeTileW , int sizeTileH){
     SDL_Rect srcRect;
@@ -53,134 +23,29 @@ int chargerTileOrSprite(CarteSDL *carteSDL , SDL_Texture *image ,
     }
     return 0;
 }
-int InitialiserSDL(CarteSDL *carteSDL){
-    if(0!=TTF_Init()){
-        fprintf(stderr , "Erreur SDL_Init : %s" , SDL_GetError());
-        return -1;
-    }
-    if(0!=SDL_Init(SDL_INIT_VIDEO)){
-        fprintf(stderr , "Erreur SDL_Init : %s" , SDL_GetError());
-        return -1;
-    }
-    carteSDL->window = SDL_CreateWindow("Trapped Hero" , SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED , 900 , 900 , SDL_WINDOW_SHOWN/*|SDL_WINDOW_FULLSCREEN_DESKTOP*/);
-    if(carteSDL->window==NULL){
-        fprintf(stderr , "Erreur SDL_CreateWindow : %s" , SDL_GetError());
-        return -1;
-    }
-    carteSDL->renderer=SDL_CreateRenderer(carteSDL->window , -1 , SDL_RENDERER_ACCELERATED);
-    if(carteSDL->renderer==NULL){
-        fprintf(stderr , "Erreur SDL_CreateRenderer : %s" , SDL_GetError());
-        return -1;
-    }
-    carteSDL->mur=malloc(sizeof(SDL_Texture*)*3);
-    carteSDL->chemin=malloc(sizeof(SDL_Texture*)*3);
-    return 0;
-}
-void quitterSDL(CarteSDL *carteSDL){
-    if(carteSDL->vide!=NULL){
-        SDL_DestroyTexture(carteSDL->vide);
-    }
-    if(carteSDL->chemin[0]!=NULL){
-        SDL_DestroyTexture(carteSDL->chemin[0]);
-    }
-    if(carteSDL->chemin[1]!=NULL){
-        SDL_DestroyTexture(carteSDL->chemin[1]);
-    }
-    if(carteSDL->chemin[2]!=NULL){
-        SDL_DestroyTexture(carteSDL->chemin[2]);
-    }
-    if(carteSDL->porte!=NULL){
-        SDL_DestroyTexture(carteSDL->porte);
-    }
-    if(carteSDL->mur[0]!=NULL){
-        SDL_DestroyTexture(carteSDL->mur[0]);
-    }
-    if(carteSDL->mur[1]!=NULL){
-        SDL_DestroyTexture(carteSDL->mur[1]);
-    }
-    if(carteSDL->mur[2]!=NULL){
-        SDL_DestroyTexture(carteSDL->mur[2]);
-    }
-    if(carteSDL->escalierHaut!=NULL){
-        SDL_DestroyTexture(carteSDL->escalierHaut);
-    }
-    if(carteSDL->escalierBas!=NULL){
-        SDL_DestroyTexture(carteSDL->escalierBas);
-    }
-    if(carteSDL->treasor!=NULL){
-        SDL_DestroyTexture(carteSDL->treasor);
-    }
-    if(carteSDL->treasorOpen!=NULL){
-        SDL_DestroyTexture(carteSDL->treasorOpen);
-    }
-    if(carteSDL->personnage!=NULL){
-        SDL_DestroyTexture(carteSDL->personnage);
-    }
-    if(carteSDL->renderer!=NULL){
-        SDL_DestroyRenderer(carteSDL->renderer);
-    }
-    if(carteSDL->window!=NULL){
-        SDL_DestroyWindow(carteSDL->window);
-    }
-    TTF_Quit();
-    SDL_Quit();
-    free(carteSDL);
-}
 int initialiserTile(CarteSDL *carteSDL , int w , int h){
-    int out=0;
-    carteSDL->mur[0]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->mur[0]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
+    int out=0 , i=0;
+    for(i=0; i<3; i++){
+        carteSDL->mur[i]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
+        if(carteSDL->mur[i]==NULL){
+            fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
+            out=-1;
+        }
+        if(0!=SDL_SetTextureBlendMode(carteSDL->mur[i] ,SDL_BLENDMODE_BLEND)){
+            fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
+            out=-1;
+        }
     }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->mur[0] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
-    }
-    carteSDL->mur[1]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->mur[1]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
-    }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->mur[1] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
-    }
-    carteSDL->mur[2]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->mur[2]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
-    }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->mur[2] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
-    }
-    carteSDL->chemin[0]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->chemin[0]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
-    }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->chemin[0] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
-    }
-    carteSDL->chemin[1]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->chemin[1]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
-    }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->chemin[1] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
-    }
-    carteSDL->chemin[2]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
-    if(carteSDL->chemin[2]==NULL){
-        fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
-        out=-1;
-    }
-    if(0!=SDL_SetTextureBlendMode(carteSDL->chemin[2] ,SDL_BLENDMODE_BLEND)){
-        fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
-        out=-1;
+    for(i=0; i<3; i++){
+        carteSDL->chemin[i]=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h);
+        if(carteSDL->chemin[i]==NULL){
+            fprintf(stderr , "Erreur SDL_CreateTexture : %s" , SDL_GetError());
+            out=-1;
+        }
+        if(0!=SDL_SetTextureBlendMode(carteSDL->chemin[i] ,SDL_BLENDMODE_BLEND)){
+            fprintf(stderr , "Error SDL_SetTextureBlendMode : %s" , SDL_GetError());
+            out=-1;
+        }
     }
     carteSDL->porte=SDL_CreateTexture(carteSDL->renderer , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , w , h );
     if(carteSDL->porte==NULL){
@@ -254,7 +119,7 @@ int initialiserMonster(CarteSDL *carteSDL , int w ,int  h){
 int loadTileset(CarteSDL *carteSDL){
     SDL_Texture *tileset=NULL , *monster=NULL;
     SDL_Rect srcRect={0 , 0 , 0 , 0};
-    int wTileset=0  , hTileset=0 , sizeTileW=0 ,sizeTileH=0 ,wMonster=0  , hMonster=0 , sizeMonsterW=0 ,sizeMonsterH=0  , out=0;
+    int wTileset=0  , hTileset=0 , sizeTileW=0 ,sizeTileH=0 ,wMonster=0  , hMonster=0 , sizeMonsterW=0 ,sizeMonsterH=0  , out=0 , i=0;
     if(0!=loadIMG(carteSDL , "image/tileset.png" , &tileset)){
         out=-1;
         goto loadTilesetQuit;
@@ -278,36 +143,20 @@ int loadTileset(CarteSDL *carteSDL){
         goto loadTilesetQuit;
     }
     /*Loading wall tile*/
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->mur[0])  ,0 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
-    }
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->mur[1])  ,1 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
-    }
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->mur[2])  ,2 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
+    for(i=0; i<3; i++){
+        if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->mur[i])  ,i , 1 , sizeTileW , sizeTileH)){
+            fprintf(stderr , "\nErreur chargement image\n");
+            out=-1;
+            goto loadTilesetQuit;
+        }
     }
     /*Loading chemin tile*/
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->chemin[0]) , 3 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
-    }
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->chemin[1]) , 4 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
-    }
-    if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->chemin[2]) , 5 , 1 , sizeTileW , sizeTileH)){
-        fprintf(stderr , "\nErreur chargement image\n");
-        out=-1;
-        goto loadTilesetQuit;
+    for(i=0; i<3; i++){
+        if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->chemin[i]) , i+3 , 1 , sizeTileW , sizeTileH)){
+            fprintf(stderr , "\nErreur chargement image\n");
+            out=-1;
+            goto loadTilesetQuit;
+        }
     }
     /*Loading porte tile*/
     if(0!=chargerTileOrSprite(carteSDL , tileset , &(carteSDL->porte) , 5 , 0 , sizeTileW , sizeTileH)){
@@ -361,21 +210,6 @@ int loadTileset(CarteSDL *carteSDL){
     }
     return out;
 }
-CarteSDL *initialiserCarteSDL(){
-    CarteSDL *carteSDL=malloc(sizeof(CarteSDL));
-    if(0!=InitialiserSDL(carteSDL)){
-        quitterSDL(carteSDL);
-        fprintf(stderr , "Error SDL finish the print of the map");
-        return NULL;
-    }
-    demarrage(carteSDL);
-    if(0!=loadTileset(carteSDL)){
-        quitterSDL(carteSDL);
-        fprintf(stderr , "Error SDL finish the print of the map");
-        return NULL;
-    }
-    return carteSDL;
-}
 int reajusterCadrage(Carte *carte ,int position ,  int windowH,int  windowW , int tileNbW ,int tileNbH ){
     int i=0 , continuer=1;
     while(carte->largeur*carte->hauteur<position+carte->largeur*tileNbH){
@@ -404,8 +238,8 @@ int reajusterCadrage(Carte *carte ,int position ,  int windowH,int  windowW , in
 int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int taille  , SDL_Keycode event){
     int positionTheorique=0,  windowH=0, windowW=0 , tileNbW=0 , tileNbH=0 , i=position , y=0 , compteurW=0 , compteurH=0 ;
     SDL_Rect rect={0 , 0 , 0 , 0};
+    SDL_Texture *texture=NULL;
     SDL_GetWindowSize(carteSDL->window , &windowW , &windowH);
-    //printf("%d\n" , carte->posPerso);
     SDL_SetRenderDrawColor(carteSDL->renderer , 255 , 255 , 255 , 255);
     SDL_RenderClear(carteSDL->renderer );
     tileNbH=windowH/taille;
@@ -463,7 +297,6 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
     }
     else if((carte->posPerso>positionTheorique+1&&carte->posPerso!=positionTheorique+carte->largeur)
     ||(carte->posPerso<positionTheorique-1&&carte->posPerso!=positionTheorique-carte->largeur)){
-    //printf("ICI2n");
         switch(event){
             case SDLK_UP :
                    if(position>carte->largeur){
@@ -493,59 +326,67 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
         rect.x=compteurW*taille;
         rect.w=taille;
         rect.h=taille;
+        //Loading tile
         switch(carte->terrain[i].type){
             case VIDE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
-                //printf("  ");
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
+                texture=carteSDL->vide;
                 break;
             case CHEMIN :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
-                //printf("@ " );
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
+                texture=carteSDL->chemin[carte->terrain[i].numeroTile];
                 break;
             case MUR:
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                //printf("[]" );
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
+                texture=carteSDL->mur[carte->terrain[i].numeroTile];
                 break;
             case MUR_SALLE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                //printf("##");
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
+                texture=carteSDL->mur[carte->terrain[i].numeroTile];
                 break;
             case SOL_SALLE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
-                //printf("..");
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
+                texture=carteSDL->chemin[carte->terrain[i].numeroTile];
                 break;
             case PORTE :
-                if(carte->terrain[i].orientation==HORIZONTALE){
-                    //printf("__");
-                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-                }
-                else if(carte->terrain[i].orientation==VERTICALE){
-                    //printf("| ");
-                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-                }
+//                if(carte->terrain[i].orientation==HORIZONTALE){
+//                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
+//                }
+//                else if(carte->terrain[i].orientation==VERTICALE){
+//                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
+//                }
+                texture=carteSDL->porte;
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
                 break;
             case MUR_CHEMIN :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                //printf("+ ");
+//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
+                texture=carteSDL->mur[carte->terrain[i].numeroTile];
                 break;
         }
+        //Now copy the texture of tile on the renderer
+        if(texture!=NULL){
+            SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+            texture=NULL;
+        }
+        //Loading object
         switch(carte->terrain[i].object){
             case ESCALIER_HAUT :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->escalierHaut , NULL  , &rect );
-                //printf("+ ");
+                texture=carteSDL->escalierHaut;
                 break;
             case ESCALIER_BAS :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->escalierBas , NULL  , &rect );
-                //printf("+ ");
+                texture=carteSDL->escalierBas;
                 break;
             case COFFRE :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->treasor , NULL  , &rect );
-                //printf("+ ");
+                texture=carteSDL->treasor;
                 break;
             case TREASOR_OPEN :
-                SDL_RenderCopy(carteSDL->renderer , carteSDL->treasorOpen , NULL  , &rect );
-                //printf("+ ");
+                texture=carteSDL->treasorOpen;
                 break;
+        }
+        //Now copy the texture of object on the renderer
+        if(texture!=NULL){
+            SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+            texture=NULL;
         }
         if(i==carte->posPerso){
             SDL_RenderCopy(carteSDL->renderer , carteSDL->personnage , NULL  , &rect );
@@ -555,13 +396,12 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
             y=y+taille;
             compteurH++;
             i=position+carte->largeur*compteurH;
-            //printf("Valeur %d  " , position+carte->largeur*compteurH);
         }else{
             i++;
             compteurW++;
         }
         if(i>=carte->largeur*carte->hauteur){
-            //printf("Erreur debordement\n");
+            printf("Erreur debordement\n");
         }
     }
     SDL_RenderPresent(carteSDL->renderer);
