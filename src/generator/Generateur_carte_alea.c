@@ -123,6 +123,7 @@ void quitterGenerateur(Carte *carte){
     carte->position=NULL;
     free(carte->blackListRoom);
     carte->blackListRoom=NULL;
+    free(carte);
 }
 void quitterJeu(Carte *carte , CarteSDL *carteSDL){
     if(carte!=NULL){

@@ -8,11 +8,14 @@
 #include "../include/Afficher_carte.h"
 #include "../include/Move_character.h"
 #include "../include/menu.h"
+#include "../include/enregistrer_carte.h"
 int main()
 {
     CarteSDL *carteSDL=NULL;
     Carte *carte=NULL;
-    int dimension =0 , recommencer=0 , out=0;
+    int dimension =0 , recommencer=0 , out=0, lire=0;
+    printf("Voulez vous lire une carte enregistré ou générer une nouvelle carte :\n1-Lire\n2-Générerer\nVotre choix :");
+    scanf("%d" , &lire);
     srand(time(NULL));
     dimension=rand_a_b(100 , 120);
     carteSDL=initialiserCarteSDL();
@@ -25,8 +28,14 @@ int main()
         quitterJeu(carte , carteSDL);
     }
     else if(out==0){
-        carte =generateurCarteAlea(100 , 100 );
+        if(lire==2){
+            carte =/*lireCarte()*/generateurCarteAlea(100 , 100 );
+        }
+        else if(lire==1){
+            carte=lireCarte();
+        }
         moveCharacter(carte , carteSDL );
+        enregistrerCarte(carte);
         quitterJeu(carte , carteSDL);
     }
     else{
