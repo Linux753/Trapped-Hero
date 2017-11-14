@@ -13,9 +13,7 @@ int main()
 {
     CarteSDL *carteSDL=NULL;
     Carte *carte=NULL;
-    int dimension =0 , recommencer=0 , out=0, lire=0;
-    printf("Voulez vous lire une carte enregistré ou générer une nouvelle carte :\n1-Lire\n2-Générerer\nVotre choix :");
-    scanf("%d" , &lire);
+    int dimension =0 , recommencer=0 , out=0 , choice=0;
     srand(time(NULL));
     dimension=rand_a_b(100 , 120);
     carteSDL=initialiserCarteSDL();
@@ -23,16 +21,18 @@ int main()
         fprintf(stderr , "\nErreur\n");
         return -1;
     }
-    out=menu(carteSDL);
+    out=menu(carteSDL , &choice);
     if(out==QUIT){
         quitterJeu(carte , carteSDL);
     }
-    else if(out==0){
-        if(lire==2){
-            carte =/*lireCarte()*/generateurCarteAlea(100 , 100 );
+    else if(out!=-1){
+        if(out==PLAY){
+            carte =generateurCarteAlea(100 , 100 );
+            sprintf(carte->path , "carte/carte%d/carte1.txt" , choice);
+            carte->numGame=choice;
         }
-        else if(lire==1){
-            carte=lireCarte();
+        else if(out==LOAD){
+            carte=lireCarte(choice);
         }
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);

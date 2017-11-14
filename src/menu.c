@@ -76,9 +76,208 @@ void demarrage(CarteSDL* sdlVar){
     SDL_DestroyTexture(textSDL);
     SDL_DestroyTexture(specialThank);
 }
+void quitterMenuSave(Button *button1 , Button *button2 , Button *button3){
+    if(button1!=NULL){
+        if(button1->text!=NULL){
+            SDL_DestroyTexture(button1->text);
+        }
+    free(button1);
+    }
+    if(button2!=NULL){
+        if(button2->text!=NULL){
+            SDL_DestroyTexture(button2->text);
+        }
+    free(button2);
+    }
+    if(button3!=NULL){
+        if(button3->text!=NULL){
+            SDL_DestroyTexture(button3->text);
+        }
+    free(button3);
+    }
+}
+int initMenuSave(CarteSDL *carteSDL , Button *game1 , Button *game2 , Button *game3){
+    SDL_Color colorfg={0 , 0 , 0 , 255};
+    int w=0 , h=0;
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Game 1" , 50 , &game1->text , &colorfg , NULL)){
+        fprintf(stderr , "\nErreur write text for button\n");
+        return -1;
+    }
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Game 2" , 50 , &game2->text , &colorfg , NULL)){
+        fprintf(stderr , "\nErreur write text for button\n");
+        return -1;
+    }
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Game 3" , 50 , &game3->text , &colorfg , NULL)){
+        fprintf(stderr , "\nErreur write text for button\n");
+        return -1;
+    }
+    /*Now set the rect of texture*/
+    SDL_QueryTexture(game1->text , NULL , NULL , &game1->rectText.w , &game1->rectText.h);
+    SDL_QueryTexture(game2->text , NULL , NULL , &game2->rectText.w , &game2->rectText.h);
+    SDL_QueryTexture(game3->text , NULL , NULL , &game3->rectText.w , &game3->rectText.h);
+    SDL_GetWindowSize(carteSDL->window , &w , &h);
+    game1->rectSelect.y=20;
+    game1->rectSelect.h=h-40;
+    game1->rectSelect.w=(w-80)/3;
+    game1->rectSelect.x=20*1+game1->rectSelect.w*0;
+    game1->rectText.x=(game1->rectSelect.x+(game1->rectSelect.w/2))-game1->rectText.w/2;
+    game1->rectText.y=(game1->rectSelect.y+(game1->rectSelect.h/2))-game1->rectText.h/2;
+    game1->select=0;
+    game2->rectSelect.y=20;
+    game2->rectSelect.h=h-40;
+    game2->rectSelect.w=(w-80)/3;
+    game2->rectSelect.x=20*2+game2->rectSelect.w*1;
+    game2->rectText.x=(game2->rectSelect.x+(game2->rectSelect.w/2))-game2->rectText.w/2;
+    game2->rectText.y=(game2->rectSelect.y+(game2->rectSelect.h/2))-game2->rectText.h/2;
+    game2->select=0;
+    game3->rectSelect.y=20;
+    game3->rectSelect.h=h-40;
+    game3->rectSelect.w=(w-80)/3;
+    game3->rectSelect.x=20*3+game3->rectSelect.w*2;
+    game3->rectText.x=(game3->rectSelect.x+(game3->rectSelect.w/2))-game3->rectText.w/2;
+    game3->rectText.y=(game3->rectSelect.y+(game3->rectSelect.h/2))-game3->rectText.h/2;
+    game3->select=0;
+    return 0;
+}
+int printMenuSave(CarteSDL *carteSDL , Button *game1 , Button *game2 , Button *game3){
+    SDL_SetRenderDrawColor(carteSDL->renderer , 88 , 40 , 0 , 255);
+    SDL_RenderClear(carteSDL->renderer);
+    if(0!=SDL_RenderCopy(carteSDL->renderer , game1->text , NULL  , &game1->rectText)){
+        fprintf(stderr , "Erreur SDL_RenderCopy() : %s \n" , SDL_GetError());
+        return -1;
+    }
+    if(0!=SDL_RenderCopy(carteSDL->renderer , game2->text , NULL  , &game2->rectText)){
+        fprintf(stderr , "Erreur SDL_RenderCopy() : %s \n" , SDL_GetError());
+        return -1;
+    }
+    if(0!=SDL_RenderCopy(carteSDL->renderer , game3->text , NULL  , &game3->rectText)){
+        fprintf(stderr , "Erreur SDL_RenderCopy() : %s \n" , SDL_GetError());
+        return -1;
+    }
+}
+int menuSave(CarteSDL* carteSDL){
+    Button *game1=NULL , *game2=NULL , *game3=NULL;
+    SDL_Point mousePos;
+    SDL_Event event;
+    int continuer=1 , out=0;
+    game1=malloc(sizeof(Button));
+    if(game1==NULL){
+        fprintf(stderr , "Erreur d'allocation de mémoire\n");
+        quitterMenuSave(game1 , game2 , game3);
+        return -1;
+    }
+    game2=malloc(sizeof(Button));
+    if(game2==NULL){
+        fprintf(stderr , "Erreur d'allocation de mémoire\n");
+        quitterMenuSave(game1 , game2 , game3);
+        return -1;
+    }
+    game3=malloc(sizeof(Button));
+    if(game3==NULL){
+        fprintf(stderr , "Erreur d'allocation de mémoire\n");
+        quitterMenuSave(game1 , game2 , game3);
+        return -1;
+    }
+    if(0!=initMenuSave(carteSDL , game1 , game2 , game3)){
+        fprintf(stderr , "Erreur initMenuSave()\n");
+        quitterMenuSave(game1 , game2 , game3);
+        return -1;
+    }
+    if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+        fprintf(stderr , "Erreur printMenuSave()\n");
+        quitterMenuSave(game1 , game2 , game3);
+        return -1;
+    }
+    SDL_RenderPresent(carteSDL->renderer);
+    SDL_GetMouseState(&mousePos.x , &mousePos.y);
+    while(continuer){
+        if(SDL_PollEvent(&event)){
+            switch(event.type){
+                case SDL_MOUSEMOTION :
+                    SDL_GetMouseState(&mousePos.x , &mousePos.y);
+                    break;
+                case SDL_MOUSEBUTTONDOWN :
+                        if(game1->select==1){
+                            continuer=0;
+                            out=1;
+                        }
+                        if(game2->select==1){
+                            continuer=0;
+                            out=2;
+                        }
+                        if(game3->select==1){
+                            continuer=0;
+                            out=3;
+                        }
+                        break;
+            }
+        }
+        else{
+            SDL_Delay(10);
+        }
+        if(SDL_PointInRect(&mousePos , &game1->rectSelect)==SDL_TRUE){
+            if(game1->select!=1){
+                game1->select=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer , &game1->rectSelect);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            if(game1->select!=0){
+                game1->select=0;
+                if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+                    fprintf(stderr , "Erreur printMenuSave()\n");
+                    quitterMenuSave(game1 , game2 , game3);
+                    return -1;
+                }
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        if(SDL_PointInRect(&mousePos , &game2->rectSelect)==SDL_TRUE){
+            if(game2->select!=1){
+                game2->select=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer  , &game2->rectSelect);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            if(game2->select!=0){
+                game2->select=0;
+                if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+                    fprintf(stderr , "Erreur printMenuSave()\n");
+                    quitterMenuSave(game1 , game2 , game3);
+                    return -1;
+                }
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        if(SDL_PointInRect(&mousePos , &game3->rectSelect)==SDL_TRUE){
+            if(game3->select!=1){
+                game3->select=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer  , &game3->rectSelect);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            if(game3->select!=0){
+                game3->select=0;
+                if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+                    fprintf(stderr , "Erreur printMenuSave()\n");
+                    quitterMenuSave(game1 , game2 , game3);
+                    return -1;
+                }
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+    }
+    quitterMenuSave(game1 , game2 , game3);
+    return out;
+}
 int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
-                SDL_Rect *rectQuitter , SDL_Rect *rectJouer ,
-                SDL_Texture **quitter , SDL_Texture **jouer){
+                Button *play , Button *quit , Button *load){
     SDL_Color colorfg={0 , 0 , 0 , 255} , colorbg={0 , 0 , 255 , 255};
     *menu=SDL_CreateTexture(carteSDL->renderer  , SDL_PIXELFORMAT_RGBA8888 , SDL_TEXTUREACCESS_TARGET , rectMenu->w , rectMenu->h);
     if(menu==NULL){
@@ -89,34 +288,44 @@ int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
         fprintf(stderr , "Erreur SDL_SetRenderTarget : %s" , SDL_GetError());
         return -1;
     }
-    SDL_RenderClear(carteSDL->renderer);
     SDL_SetRenderDrawColor(carteSDL->renderer , 88 , 41 , 0 , 255);
-    SDL_RenderFillRect(carteSDL->renderer , NULL);
-    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Quit" , 50 , quitter , &colorfg , NULL)){
+    SDL_RenderClear(carteSDL->renderer);
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Quit" , 40 , &quit->text , &colorfg , NULL)){
         fprintf(stderr , "\nErreur SDL ttf");
         return -1;
     }
-    SDL_QueryTexture(*quitter , NULL , NULL , &rectQuitter->w , &rectQuitter->h);
-    rectQuitter->x=rectMenu->w/3-rectQuitter->w/2;
-    rectQuitter->y=rectMenu->h/2-rectQuitter->h/2;
-    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Play" , 50 , jouer , &colorfg , NULL)){
+    SDL_QueryTexture(quit->text ,  NULL , NULL , &quit->rectText.w , &quit->rectText.h);
+    quit->rectText.x=(rectMenu->w/4)*3-quit->rectText.w/2;
+    quit->rectText.y=rectMenu->h/2-quit->rectText.h/2;
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "New Game" , 40 , &play->text , &colorfg , NULL)){
         fprintf(stderr , "\nErreur SDL ttf");
         return -1;
     }
-    SDL_QueryTexture(*jouer , NULL , NULL , &rectJouer->w , &rectJouer->h);
-    rectJouer->x=(rectMenu->w/3)*2-rectJouer->w/2;
-    rectJouer->y=rectMenu->h/2-rectJouer->h/2;
-    SDL_RenderCopy(carteSDL->renderer , *quitter , NULL , rectQuitter);
-    SDL_RenderCopy(carteSDL->renderer , *jouer , NULL , rectJouer);
-    SDL_SetRenderTarget(carteSDL->renderer , NULL);
+    SDL_QueryTexture(play->text , NULL , NULL , &play->rectText.w , &play->rectText.h);
+    play->rectText.x=(rectMenu->w/4)*2-play->rectText.w/2;
+    play->rectText.y=rectMenu->h/2-play->rectText.h/2;
+    if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Load Game" , 40 , &load->text , &colorfg , NULL)){
+        fprintf(stderr , "\nErreur SDL ttf");
+        return -1;
+    }
+    SDL_QueryTexture(load->text , NULL , NULL , &load->rectText.w , &load->rectText.h);
+    load->rectText.x=(rectMenu->w/4)*1
+    -play->rectText.w/2;
+    load->rectText.y=rectMenu->h/2-play->rectText.h/2;
+    SDL_RenderCopy(carteSDL->renderer , quit->text , NULL , &quit->rectText);
+    SDL_RenderCopy(carteSDL->renderer ,play->text , NULL , &play->rectText);
+    SDL_RenderCopy(carteSDL->renderer ,load->text , NULL , &load->rectText);
+    if(0!=SDL_SetRenderTarget(carteSDL->renderer , NULL)){
+        fprintf(stderr , "Erreur SDL_SetRenderTarget : %s" , SDL_GetError());
+        return -1;
+    }
     SDL_RenderCopy(carteSDL->renderer , *menu , NULL , rectMenu);
     return 0;
 }
 int redessinerMenu(CarteSDL *carteSDL ,
                     SDL_Texture *menu , SDL_Texture *title ,
                     SDL_Rect *rectMenu , SDL_Rect *rectTitle ,
-                    SDL_Rect *rectQuitter , SDL_Rect *rectJouer ,
-                    SDL_Texture *quitter , SDL_Texture *jouer ){
+                    Button *play , Button *quit , Button *load){
     SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38, 255);
     SDL_RenderClear(carteSDL->renderer );
     if(0!=SDL_RenderCopy(carteSDL->renderer , title , NULL , rectTitle)){
@@ -137,40 +346,73 @@ int redessinerMenu(CarteSDL *carteSDL ,
         fprintf(stderr , "Erreur SDL_RenderCopy() : %s" , SDL_GetError());
         return -1;
     }
-    if(0!=SDL_RenderCopy(carteSDL->renderer , jouer , NULL , rectJouer)){
+    if(0!=SDL_RenderCopy(carteSDL->renderer , play->text , NULL , &play->rectText)){
         fprintf(stderr , "Erreur SDL_RenderCopy() : %s" , SDL_GetError());
         return -1;
     }
-    if(0!=SDL_RenderCopy(carteSDL->renderer , quitter , NULL , rectQuitter)){
+    if(0!=SDL_RenderCopy(carteSDL->renderer , quit->text , NULL , &quit->rectText)){
+        fprintf(stderr , "Erreur SDL_RenderCopy() : %s" , SDL_GetError());
+        return -1;
+    }
+    if(0!=SDL_RenderCopy(carteSDL->renderer , load->text , NULL , &load->rectText)){
         fprintf(stderr , "Erreur SDL_RenderCopy() : %s" , SDL_GetError());
         return -1;
     }
     return 0;
     }
-void quitterMenu(SDL_Texture *texture1 , SDL_Texture *texture2 , SDL_Texture *texture3 , SDL_Texture *texture4){
+void quitterMenu(SDL_Texture *texture1 , SDL_Texture *texture2 ,
+                Button *button1 , Button *button2 , Button *button3){
     if(texture1!=NULL){
         SDL_DestroyTexture(texture1);
     }
     if(texture2!=NULL){
         SDL_DestroyTexture(texture2);
     }
-    if(texture3!=NULL){
-        SDL_DestroyTexture(texture2);
-    }
-    if(texture4!=NULL){
-        SDL_DestroyTexture(texture2);
+    if(button1!=NULL&&button2!=NULL&&button3!=NULL){
+        if(button1->text!=NULL){
+            SDL_DestroyTexture(button1->text);
+        }
+        if(button2->text!=NULL){
+            SDL_DestroyTexture(button2->text);
+        }
+        if(button3->text!=NULL){
+            SDL_DestroyTexture(button3->text);
+        }
+    free(button3);
+    free(button1);
+    free(button2);
     }
 }
-int menu(CarteSDL *carteSDL){
-    SDL_Texture *title=NULL , *menu=NULL , *quitter=NULL , *jouer=NULL;
+int menu(CarteSDL *carteSDL , int *choice){
+    SDL_Texture *title=NULL , *menu=NULL;
     SDL_Color fontColor={255 , 255 , 255 , 255};
-    SDL_Rect dstRect={0 , 0 , 0 , 0} , rectMenu={0 , 0 , 0 , 0} , rectQuitter={0 , 0 , 0 , 0} , rectJouer={0 , 0 , 0 , 0} , rectSelectJouer={0 , 0 , 0 , 0} , rectSelectQuitter={0 , 0 , 0 , 0};
+    SDL_Rect rectTitle={0 , 0 , 0 , 0} , rectMenu={0 , 0 , 0 , 0} ;
+    Button *play=NULL , *quit=NULL , *load=NULL;
     SDL_Event event;
     SDL_Point mousePos={0 , 0};
-    int w=0 , h=0 , continuer=1 , interQuitter=0 , interJouer=0 , out=0;
+    int w=0 , h=0 , continuer=1 , out=0;
+    *choice=0;
+    play=malloc(sizeof(Button));
+    if(play==NULL){
+        fprintf(stderr , "Erreur allocation memoire\n");
+        quitterMenu(title , menu , quit , play , load);
+        return -1;
+    }
+    quit=malloc(sizeof(Button));
+    if(quit==NULL){
+        fprintf(stderr , "Erreur allocation memoire\n");
+        quitterMenu(title , menu , quit , play , load);
+        return -1;
+    }
+    load=malloc(sizeof(Button));
+    if(load==NULL){
+        fprintf(stderr , "Erreur allocation memoire\n");
+        quitterMenu(title , menu , quit , play , load);
+        return -1;
+    }
     if(0!=ecrireTextSDL(carteSDL , "police/OpenSans-Regular.ttf" , "Trapped Hero" , 200 , &title , &fontColor , NULL)){
         fprintf(stderr , "\nErreur SDL_ttf\n");
-        quitterMenu(title , menu , jouer , quitter);
+        quitterMenu(title , menu , quit , play , load);
         return -1;
     }
     SDL_GetWindowSize(carteSDL->window , &w , &h);
@@ -180,25 +422,32 @@ int menu(CarteSDL *carteSDL){
     rectMenu.h=200;
     SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38 , 38);
     SDL_RenderClear(carteSDL->renderer);
-    SDL_QueryTexture(title , NULL , NULL , &dstRect.w , &dstRect.h);
-    dstRect.x=(w/2)-(dstRect.w/2);
-    dstRect.y=((h-rectMenu.h)/2)-(dstRect.h/2);
-    SDL_RenderCopy(carteSDL->renderer  , title , NULL , &dstRect);
-    if(0!=dessinerMenu(carteSDL , &menu , &rectMenu , &rectQuitter , &rectJouer , &quitter , &jouer)){
+    SDL_QueryTexture(title , NULL , NULL , &rectTitle.w , &rectTitle.h);
+    rectTitle.x=(w/2)-(rectTitle.w/2);
+    rectTitle.y=((h-rectMenu.h)/2)-(rectTitle.h/2);
+    SDL_RenderCopy(carteSDL->renderer  , title , NULL , &rectTitle);
+    if(0!=dessinerMenu(carteSDL , &menu , &rectMenu , play , quit , load)){
         fprintf(stderr , "\nError print menu");
-        quitterMenu(title , menu , jouer , quitter);
+        quitterMenu(title , menu , quit , play , load);
         return -1;
     }
-    rectJouer.y=rectJouer.y+(h-rectMenu.h);
-    rectQuitter.y=rectQuitter.y+(h-rectMenu.h);
-    rectSelectJouer.x=rectJouer.x-10;
-    rectSelectJouer.y=rectJouer.y-5;
-    rectSelectJouer.w=rectJouer.w+20;
-    rectSelectJouer.h=rectJouer.h+10;
-    rectSelectQuitter.x=rectQuitter.x-10;
-    rectSelectQuitter.y=rectQuitter.y-5;
-    rectSelectQuitter.w=rectQuitter.w+20;
-    rectSelectQuitter.h=rectQuitter.h+10;
+    /*Set absolute position*/
+    play->rectText.y=play->rectText.y+(h-rectMenu.h);
+    quit->rectText.y=quit->rectText.y+(h-rectMenu.h);
+    load->rectText.y=load->rectText.y+(h-rectMenu.h);
+    /*Set rect for select the button*/
+    play->rectSelect.x=play->rectText.x-10;
+    play->rectSelect.y=play->rectText.y-5;
+    play->rectSelect.w=play->rectText.w+20;
+    play->rectSelect.h=play->rectText.h+10;
+    quit->rectSelect.x=quit->rectText.x-10;
+    quit->rectSelect.y=quit->rectText.y-5;
+    quit->rectSelect.w=quit->rectText.w+20;
+    quit->rectSelect.h=quit->rectText.h+10;
+    load->rectSelect.x=load->rectText.x-10;
+    load->rectSelect.y=load->rectText.y-5;
+    load->rectSelect.w=load->rectText.w+20;
+    load->rectSelect.h=load->rectText.h+10;
     SDL_RenderPresent(carteSDL->renderer);
     while(continuer){
         if(SDL_PollEvent(&event)){
@@ -214,51 +463,77 @@ int menu(CarteSDL *carteSDL){
                     SDL_GetMouseState(&mousePos.x , &mousePos.y);
                     break;
                 case SDL_MOUSEBUTTONDOWN :
-                        if(interJouer==1){
+                        if(play->select==1){
                             continuer=0;
+                            out=PLAY;
+                            *choice=menuSave(carteSDL);
                         }
-                        if(interQuitter==1){
+                        if(quit->select==1){
                             continuer=0;
                             out=QUIT;
+                        }
+                        if(load->select==1){
+                            continuer=0;
+                            out=LOAD;
+                            *choice=menuSave(carteSDL);
                         }
                         break;
             }
         }
         else{
-            SDL_Delay(50);
+            SDL_Delay(10);
         }
-        if(SDL_PointInRect(&mousePos , &rectSelectJouer)==SDL_TRUE){
-            if(interJouer!=1){
-                interJouer=1;
+        if(SDL_PointInRect(&mousePos , &play->rectSelect)==SDL_TRUE){
+            if(play->select!=1){
+                play->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
-                SDL_RenderDrawRect(carteSDL->renderer , &rectSelectJouer);
+                SDL_RenderDrawRect(carteSDL->renderer , &play->rectSelect);
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
         else{
-            if(interJouer!=0){
-                interJouer=0;
-                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &dstRect , &rectQuitter , &rectJouer , quitter , jouer)){
-                    quitterMenu(title , menu , jouer , quitter);
+            if(play->select!=0){
+                play->select=0;
+                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle , play , quit , load)){
+                    quitterMenu(title , menu , play , quit , load);
                     fprintf(stderr , "\nErreur redessinerMenu()");
                     return -1;
                 }
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
-        if(SDL_PointInRect(&mousePos , &rectSelectQuitter)==SDL_TRUE){
-            if(interQuitter!=1){
-                interQuitter=1;
+        if(SDL_PointInRect(&mousePos , &quit->rectSelect)==SDL_TRUE){
+            if(quit->select!=1){
+                quit->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
-                SDL_RenderDrawRect(carteSDL->renderer  , &rectSelectQuitter);
+                SDL_RenderDrawRect(carteSDL->renderer  , &quit->rectSelect);
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
         else{
-            if(interQuitter!=0){
-                interQuitter=0;
-                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &dstRect , &rectQuitter , &rectJouer , quitter , jouer)){
-                    quitterMenu(title , menu , jouer , quitter);
+            if(quit->select!=0){
+                quit->select=0;
+                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle ,play , quit , load)){
+                    quitterMenu(title , menu , play , quit , load);
+                    fprintf(stderr , "Erreur redessinerMenu()");
+                    return -1;
+                }
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        if(SDL_PointInRect(&mousePos , &load->rectSelect)==SDL_TRUE){
+            if(load->select!=1){
+                load->select=1;
+                SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
+                SDL_RenderDrawRect(carteSDL->renderer  , &load->rectSelect);
+                SDL_RenderPresent(carteSDL->renderer);
+            }
+        }
+        else{
+            if(load->select!=0){
+                load->select=0;
+                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle ,play , quit , load)){
+                    quitterMenu(title , menu , play , quit , load);
                     fprintf(stderr , "Erreur redessinerMenu()");
                     return -1;
                 }
@@ -266,6 +541,6 @@ int menu(CarteSDL *carteSDL){
             }
         }
     }
-    quitterMenu(title , menu , jouer , quitter);
+    quitterMenu(title , menu , play , quit , load);
     return out;
 }

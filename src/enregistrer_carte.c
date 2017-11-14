@@ -11,13 +11,13 @@ void quitterEnregistrerCarte(FILE *file){
 int enregistrerCarte(Carte *carte){
     FILE *file=NULL;
     int i=0;
-    file=fopen("carte/carte1.txt" , "w+");
+    file=fopen(carte->path , "w+");
     if(file==NULL){
         fprintf(stderr , "Erreur ouverture fichier\n");
         quitterEnregistrerCarte(file);
         return -1;
     }
-    fprintf(file , "l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , carte->largeur , carte->hauteur , carte->nbSalle , carte->compteur , carte->nbBlackListRoom , carte->posPerso);
+    fprintf(file , "vide[0] l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , carte->largeur , carte->hauteur , carte->nbSalle , carte->compteur , carte->nbBlackListRoom , carte->posPerso);
     fprintf(file , "position");
     for(i=0; i<carte->compteur; i++){
         fprintf(file , "[%d]" , carte->position[i]);
@@ -26,9 +26,6 @@ int enregistrerCarte(Carte *carte){
     for(i=0; i<carte->nbBlackListRoom; i++){
         fprintf(file , "[%d]" , carte->blackListRoom[i]);
     }
-//    if(carte->nbBlackListRoom==0){
-//        fprintf(file , "[NULL]");
-//    }
     fprintf(file , "\nterrain");
     for(i=0; i<carte->largeur*carte->hauteur; i++){
         fprintf(file , "[type[%d] numeroSalle[%d] orientation[%d] object[%d] numeroTile[%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle , carte->terrain[i].orientation , carte->terrain[i].object , carte->terrain[i].numeroTile);
@@ -57,58 +54,66 @@ void quitterLireCarte(Carte *carte , FILE *file){
     }
 }
 
-Carte* lireCarte(){
+Carte* lireCarte(int choice){
     Carte *carte=NULL;
-    FILE *file;
-    int i=0;
+    FILE *file=NULL;
+    int i=0 , vide=0;
     carte=malloc(sizeof(Carte));
     if(carte==NULL){
         fprintf(stderr , "Erreur ouverture fichier\n");
         quitterLireCarte(carte , file);
         return NULL;
     }
-    file=fopen("carte/carte1.txt" ,"r");
+    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , choice);
+    file=fopen( carte->path ,"r");
     if(file==NULL){
         fprintf(stderr , "Erreur ouverture fichier\n");
         quitterLireCarte(carte , file);
         return NULL;
     }
-    fscanf(file , "l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , &carte->largeur , &carte->hauteur , &carte->nbSalle , &carte->compteur , &carte->nbBlackListRoom , &carte->posPerso);
-    carte->terrain = malloc(sizeof(Terrain)*(carte->largeur*carte->hauteur));
-    if(carte->terrain==NULL){
-        fprintf(stderr , "Erreur allouage de mémoire\n");
-        quitterLireCarte(carte , file);
-        return NULL;
+    if(EOF==fscanf(file , "vide[%d]" , &vide )){
+        carte=generateurCarteAlea(100 , 100);
     }
-    carte->position=NULL;
-    carte->position=malloc(sizeof(int)*carte->largeur*carte->hauteur);
-    if(carte->position==NULL){
-        fprintf(stderr , "Erreur allouage de mémoire\n");
-        quitterLireCarte(carte , file);
-        return NULL;
+    else if(vide==1){
+        carte=generateurCarteAlea(100 , 100);
     }
-    carte->blackListRoom=NULL;
-    carte->blackListRoom=malloc((sizeof(int)*(carte->largeur/5)));
-    if(carte->blackListRoom==NULL){
-        fprintf(stderr , "Erreur allouage de mémoire\n");
-        quitterLireCarte(carte , file);
-        return NULL;
+    else{
+        fscanf(file , " l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , &carte->largeur , &carte->hauteur , &carte->nbSalle , &carte->compteur , &carte->nbBlackListRoom , &carte->posPerso);
+        carte->terrain = malloc(sizeof(Terrain)*(carte->largeur*carte->hauteur));
+        if(carte->terrain==NULL){
+            fprintf(stderr , "Erreur allouage de mémoire\n");
+            quitterLireCarte(carte , file);
+            return NULL;
+        }
+        carte->position=NULL;
+        carte->position=malloc(sizeof(int)*carte->largeur*carte->hauteur);
+        if(carte->position==NULL){
+            fprintf(stderr , "Erreur allouage de mémoire\n");
+            quitterLireCarte(carte , file);
+            return NULL;
+        }
+        carte->blackListRoom=NULL;
+        carte->blackListRoom=malloc((sizeof(int)*(carte->largeur/5)));
+        if(carte->blackListRoom==NULL){
+            fprintf(stderr , "Erreur allouage de mémoire\n");
+            quitterLireCarte(carte , file);
+            return NULL;
+        }
+        fscanf(file , "position");
+        for(i=0; i<carte->compteur; i++){
+            fscanf(file , "[%d]" , &carte->position[i]);
+        }
+        fscanf(file , "\nblackListRoom");
+        for(i=0; i<carte->nbBlackListRoom; i++){
+            fscanf(file , "[%d]" , &carte->blackListRoom[i]);
+        }
+        fscanf(file , "\nterrain");
+        for(i=0; i<carte->largeur*carte->hauteur; i++){
+            fscanf(file , "[type[%d] numeroSalle[%d] orientation[%d] object[%d] numeroTile[%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].orientation , &carte->terrain[i].object , &carte->terrain[i].numeroTile);
+        }
     }
-//    fseek(file , 8 , SEEK_CUR);
-    fscanf(file , "position");
-    for(i=0; i<carte->compteur; i++){
-        fscanf(file , "[%d]" , &carte->position[i]);
-    }
-//    fseek(file , 14 , SEEK_CUR);
-    fscanf(file , "\nblackListRoom");
-    for(i=0; i<carte->nbBlackListRoom; i++){
-        fscanf(file , "[%d]" , &carte->blackListRoom[i]);
-    }
-//    fseek(file , 8 , SEEK_CUR);
-    fscanf(file , "\nterrain");
-    for(i=0; i<carte->largeur*carte->hauteur; i++){
-        fscanf(file , "[type[%d] numeroSalle[%d] orientation[%d] object[%d] numeroTile[%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].orientation , &carte->terrain[i].object , &carte->terrain[i].numeroTile);
-    }
+    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , choice);
+    carte->numGame=choice;
     quitterLireCarte(NULL , file);
     return carte;
 }

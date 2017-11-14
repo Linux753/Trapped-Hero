@@ -19,6 +19,9 @@
 #define COFFRE 3
 #define TREASOR_OPEN 4
 #define QUIT 100
+#define PLAY 101
+#define LOAD 102
+#define PATH "carte/carte%d/carte1.txt"
 #include <SDL2/SDL.h>
 
 typedef struct Terrain Terrain;
@@ -49,6 +52,8 @@ struct Carte{
     int *blackListRoom;
     int nbBlackListRoom;
     int posPerso;
+    int numGame;
+    char path[50];
 };
 typedef struct CarteSDL CarteSDL;
 struct CarteSDL{
@@ -63,5 +68,12 @@ struct CarteSDL{
     SDL_Texture *treasor;
     SDL_Texture *treasorOpen;
     SDL_Texture *personnage;
+};
+typedef struct Button Button;
+struct Button{
+    SDL_Rect rectText;
+    SDL_Rect rectSelect;
+    SDL_Texture *text;
+    int select;
 };
 #endif // STRUCTURE_H_INCLUDED

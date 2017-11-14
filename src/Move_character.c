@@ -64,6 +64,11 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                                 rafraichissement=eventPerso(carte , GAUCHE);
                             }
                             break;
+                        case SDLK_s :
+                            if(0!=enregistrerCarte(carte)){
+                                return -1;
+                            }
+                            break;
                         case SDLK_KP_PLUS :
                             zoom++;
                             rafraichissement=1;
