@@ -491,18 +491,7 @@ int menu(CarteSDL *carteSDL , int *choice){
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
-        else{
-            if(play->select!=0){
-                play->select=0;
-                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle , play , quit , load)){
-                    quitterMenu(title , menu , play , quit , load);
-                    fprintf(stderr , "\nErreur redessinerMenu()");
-                    return -1;
-                }
-                SDL_RenderPresent(carteSDL->renderer);
-            }
-        }
-        if(SDL_PointInRect(&mousePos , &quit->rectSelect)==SDL_TRUE){
+        else if(SDL_PointInRect(&mousePos , &quit->rectSelect)==SDL_TRUE){
             if(quit->select!=1){
                 quit->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
@@ -510,18 +499,7 @@ int menu(CarteSDL *carteSDL , int *choice){
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
-        else{
-            if(quit->select!=0){
-                quit->select=0;
-                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle ,play , quit , load)){
-                    quitterMenu(title , menu , play , quit , load);
-                    fprintf(stderr , "Erreur redessinerMenu()");
-                    return -1;
-                }
-                SDL_RenderPresent(carteSDL->renderer);
-            }
-        }
-        if(SDL_PointInRect(&mousePos , &load->rectSelect)==SDL_TRUE){
+        else if(SDL_PointInRect(&mousePos , &load->rectSelect)==SDL_TRUE){
             if(load->select!=1){
                 load->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
@@ -530,15 +508,15 @@ int menu(CarteSDL *carteSDL , int *choice){
             }
         }
         else{
-            if(load->select!=0){
-                load->select=0;
-                if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle ,play , quit , load)){
-                    quitterMenu(title , menu , play , quit , load);
-                    fprintf(stderr , "Erreur redessinerMenu()");
-                    return -1;
-                }
-                SDL_RenderPresent(carteSDL->renderer);
+            load->select=0;
+            play->select=0;
+            quit->select=0;
+            if(0!=redessinerMenu(carteSDL , menu , title , &rectMenu , &rectTitle ,play , quit , load)){
+                quitterMenu(title , menu , play , quit , load);
+                fprintf(stderr , "Erreur redessinerMenu()");
+                return -1;
             }
+            SDL_RenderPresent(carteSDL->renderer);
         }
     }
     quitterMenu(title , menu , play , quit , load);

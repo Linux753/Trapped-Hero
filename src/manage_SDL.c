@@ -16,7 +16,7 @@ int InitialiserSDL(CarteSDL *carteSDL){
         fprintf(stderr , "Erreur SDL_Init : %s" , SDL_GetError());
         return -1;
     }
-    carteSDL->window = SDL_CreateWindow("Trapped Hero" , SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED , 900 , 900 , SDL_WINDOW_SHOWN|SDL_WINDOW_FULLSCREEN_DESKTOP);
+    carteSDL->window = SDL_CreateWindow("Trapped Hero" , SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED , 900 , 900 , SDL_WINDOW_SHOWN);
     if(carteSDL->window==NULL){
         fprintf(stderr , "Erreur SDL_CreateWindow : %s" , SDL_GetError());
         return -1;
@@ -25,6 +25,10 @@ int InitialiserSDL(CarteSDL *carteSDL){
     if(carteSDL->renderer==NULL){
         fprintf(stderr , "Erreur SDL_CreateRenderer : %s" , SDL_GetError());
         return -1;
+    }
+    if(0!=SDL_SetRenderDrawBlendMode(carteSDL->renderer ,SDL_BLENDMODE_BLEND)){
+            fprintf(stderr , "Error SDL_SetRenderDrawBlendMode : %s" , SDL_GetError());
+            return -1;
     }
     carteSDL->mur=malloc(sizeof(SDL_Texture*)*3);
     carteSDL->chemin=malloc(sizeof(SDL_Texture*)*3);

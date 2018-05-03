@@ -7,6 +7,79 @@ void quitterEnregistrerCarte(FILE *file){
         fclose(file);
     }
 }
+void quitterInitGame(FILE *file){
+    if(file!=NULL){
+        fclose(file);
+    }
+}
+int initGame(Carte *carte){
+    FILE *file=NULL;
+    int nbFloor=0 , i=0;
+    char pathGame[50] , pathMap[50];
+    sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
+    file=fopen(pathGame , "r");
+    if(file==NULL){
+        fprintf(stderr , "Erreur open file %s" , pathGame);
+        quitterInitGame(file);
+        return -1;
+    }
+    fscanf(file , "nbFloor[%d]" , &nbFloor);
+    for(i=1; i<=nbFloor; i++){
+        sprintf(pathMap , "carte/carte%d/carte%d.txt" , carte->numGame , i);
+        remove(pathMap);
+    }
+    quitterInitGame(file);
+    file=NULL;
+    file=fopen(pathGame , "w+");
+    if(file==NULL){
+        fprintf(stderr , "Erreur open file %s" , pathGame);
+        quitterInitGame(file);
+        return -1;
+    }
+    sprintf(carte->path , "carte/carte%d/carte1.txt" , carte->numGame);
+    printf("ICI");
+    fprintf(file , "nbFloor[1] actualFloor[[%s]" , carte->path);
+    fprintf(file , "actualFloor[1]");
+    carte->nbFloor=1;
+    carte->floor=1;
+    quitterInitGame(file);
+    return 0;
+}
+void quitterLoadGame(Carte *carte , FILE *file){
+    if(file!=NULL){
+        fclose(file);
+    }
+    if(carte!=NULL){
+        free(carte);
+    }
+}
+Carte* loadGame(int choice){
+    FILE *file=NULL;
+    Carte *carte=NULL;
+    char path[50];
+    carte=malloc(sizeof(Carte));
+    if(carte==NULL){
+        fprintf(stderr , "Erreur allocation mémoire\n");
+        quitterLoadGame(carte , file);
+        return NULL;
+    }
+    carte->numGame=choice;
+    sprintf(path , "carte/carte%d/game.gm" , carte->numGame);
+    file=fopen(path , "r");
+    if(file==NULL){
+        fprintf(stderr , "Erreur load file %s" , path);
+        quitterLoadGame(carte , file);
+        return NULL;
+    }
+    fscanf(file , "nbFloor[%d] actualFloor[[%[^\]]s" , &(carte->nbFloor) ,&(carte->path));
+    fscanf(file , "]actualFloor[%d]" , &(carte->floor));
+    fprintf(stderr , "%s\n" , carte->path);
+    lireCarte(carte);
+    quitterLoadGame(NULL , file);
+    fprintf(stderr , "%d" , carte->terrain[carte->posPerso].voile);
+    fprintf(stderr , "%d\n" , carte);
+    return carte;
+}
 
 int enregistrerCarte(Carte *carte){
     FILE *file=NULL;
@@ -28,7 +101,7 @@ int enregistrerCarte(Carte *carte){
     }
     fprintf(file , "\nterrain");
     for(i=0; i<carte->largeur*carte->hauteur; i++){
-        fprintf(file , "[type[%d] numeroSalle[%d] orientation[%d] object[%d] numeroTile[%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle , carte->terrain[i].orientation , carte->terrain[i].object , carte->terrain[i].numeroTile);
+        fprintf(file , "[[%d][%d][%d][%d][%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle  , carte->terrain[i].object , carte->terrain[i].numeroTile , carte->terrain[i].voile);
     }
     quitterEnregistrerCarte(file);
     return 0;
@@ -45,29 +118,18 @@ void quitterLireCarte(Carte *carte , FILE *file){
         if(carte->blackListRoom!=NULL){
             free(carte->blackListRoom);
         }
-        if(carte!=NULL){
-            free(carte);
-        }
     }
     if(file!=NULL){
         fclose(file);
     }
 }
 
-Carte* lireCarte(int choice){
-    Carte *carte=NULL;
+int lireCarte(Carte *carte){
     FILE *file=NULL;
     int i=0 , vide=0;
-    carte=malloc(sizeof(Carte));
-    if(carte==NULL){
-        fprintf(stderr , "Erreur ouverture fichier\n");
-        quitterLireCarte(carte , file);
-        return NULL;
-    }
-    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , choice);
     file=fopen( carte->path ,"r");
     if(file==NULL){
-        fprintf(stderr , "Erreur ouverture fichier\n");
+        fprintf(stderr , "Erreur ouverture fichierICI\n");
         quitterLireCarte(carte , file);
         return NULL;
     }
@@ -83,21 +145,21 @@ Carte* lireCarte(int choice){
         if(carte->terrain==NULL){
             fprintf(stderr , "Erreur allouage de mémoire\n");
             quitterLireCarte(carte , file);
-            return NULL;
+            return -1;
         }
         carte->position=NULL;
         carte->position=malloc(sizeof(int)*carte->largeur*carte->hauteur);
         if(carte->position==NULL){
             fprintf(stderr , "Erreur allouage de mémoire\n");
             quitterLireCarte(carte , file);
-            return NULL;
+            return -1;
         }
         carte->blackListRoom=NULL;
         carte->blackListRoom=malloc((sizeof(int)*(carte->largeur/5)));
         if(carte->blackListRoom==NULL){
             fprintf(stderr , "Erreur allouage de mémoire\n");
             quitterLireCarte(carte , file);
-            return NULL;
+            return -1;
         }
         fscanf(file , "position");
         for(i=0; i<carte->compteur; i++){
@@ -109,11 +171,10 @@ Carte* lireCarte(int choice){
         }
         fscanf(file , "\nterrain");
         for(i=0; i<carte->largeur*carte->hauteur; i++){
-            fscanf(file , "[type[%d] numeroSalle[%d] orientation[%d] object[%d] numeroTile[%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].orientation , &carte->terrain[i].object , &carte->terrain[i].numeroTile);
+            fscanf(file , "[[%d][%d][%d][%d][%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].object , &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
         }
     }
-    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , choice);
-    carte->numGame=choice;
+    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , carte->numGame);
     quitterLireCarte(NULL , file);
-    return carte;
+    return 0;
 }

@@ -3,5 +3,6 @@
 
 void quitterEnregistrerCarte(FILE *file);
 int enregistrerCarte(Carte *carte);
-Carte* lireCarte();
+Carte* loadGame(int choice);
+int lireCarte(Carte *carte);
 #endif // ENREGISTRER_CARTE_H_INCLUDED

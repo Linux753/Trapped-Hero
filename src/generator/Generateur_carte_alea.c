@@ -35,7 +35,7 @@ void initialiserCarte(Carte *carte){
             carte->terrain[i].type=VIDE;
         }
         carte->terrain[i].numeroSalle=0;
-        carte->terrain[i].orientation=0;
+
         carte->terrain[i].object=0;
         nbAlea=rand_a_b(1 , 101);
         if(nbAlea==98){
@@ -47,6 +47,7 @@ void initialiserCarte(Carte *carte){
         else{
             carte->terrain[i].numeroTile=0;
         }
+        carte->terrain[i].voile=HIDDEN;
     }
     carte->compteur=0;
     carte->nbBlackListRoom=0;
@@ -127,7 +128,6 @@ void quitterGenerateur(Carte *carte){
 }
 void quitterJeu(Carte *carte , CarteSDL *carteSDL){
     if(carte!=NULL){
-         printf("Dimension carte : \nHauteur = %d\nLargeur = %d\n\nMet un 1 si tu veux générer une autre carte , un 0 pour quitter", carte->hauteur , carte->largeur);
         quitterGenerateur(carte);
     }
     quitterSDL(carteSDL);

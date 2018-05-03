@@ -3,6 +3,9 @@
 #include <SDL2/SDL.h>
 #include "../include/structure.h"
 #include "../include/Afficher_carte.h"
+void floorDown(Carte *carte){
+    /*Remplir ici*/
+}
 void annulerMouvement(Carte* carte , int event){
     switch(event){
         case HAUT :
@@ -19,6 +22,53 @@ void annulerMouvement(Carte* carte , int event){
             break;
     }
 }
+void setShowTile(Carte *carte , int set){
+    carte->terrain[carte->posPerso].voile=set;
+    carte->terrain[carte->posPerso-1].voile=set;
+    carte->terrain[carte->posPerso+1].voile=set;
+    carte->terrain[carte->posPerso-carte->largeur].voile=set;
+    carte->terrain[carte->posPerso+carte->largeur].voile=set;
+    carte->terrain[carte->posPerso+carte->largeur+1].voile=set;
+    carte->terrain[carte->posPerso+carte->largeur-1].voile=set;
+    carte->terrain[carte->posPerso-carte->largeur+1].voile=set;
+    carte->terrain[carte->posPerso-carte->largeur-1].voile=set;
+    if(carte->terrain[carte->posPerso+1].type<MUR){
+        carte->terrain[carte->posPerso+2].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-1].type<MUR){
+        carte->terrain[carte->posPerso-2].voile=set;
+    }
+    if(carte->terrain[carte->posPerso+carte->largeur].type<MUR){
+    carte->terrain[carte->posPerso+2*carte->largeur].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-carte->largeur].type<MUR){
+    carte->terrain[carte->posPerso-2*carte->largeur].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-carte->largeur-1].type<MUR&&carte->terrain[carte->posPerso-carte->largeur-1].voile<MUR){
+        carte->terrain[carte->posPerso-2*carte->largeur-1].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-carte->largeur+1].type<MUR&&carte->terrain[carte->posPerso-carte->largeur+1].voile<MUR){
+        carte->terrain[carte->posPerso-2*carte->largeur+1].voile=set;
+    }
+    if(carte->terrain[carte->posPerso+carte->largeur-1].type<MUR&&carte->terrain[carte->posPerso+carte->largeur-1].voile<MUR){
+        carte->terrain[carte->posPerso+2*carte->largeur-1].voile=set;
+    }
+    if(carte->terrain[carte->posPerso+carte->largeur+1].type<MUR&&carte->terrain[carte->posPerso+carte->largeur+1].voile<MUR){
+        carte->terrain[carte->posPerso+2*carte->largeur+1].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-1+carte->largeur].type<MUR&&carte->terrain[carte->posPerso-1+carte->largeur].voile<MUR){
+        carte->terrain[carte->posPerso-2+carte->largeur].voile=set;
+    }
+    if(carte->terrain[carte->posPerso-1-carte->largeur].type<MUR&&carte->terrain[carte->posPerso-1-carte->largeur].voile<MUR){
+        carte->terrain[carte->posPerso-2-carte->largeur].voile=set;
+    }
+    if(carte->terrain[carte->posPerso+1+carte->largeur].type<MUR&&carte->terrain[carte->posPerso+1+carte->largeur].voile<MUR){
+        carte->terrain[carte->posPerso+2+carte->largeur].voile=set;
+    }
+    if(carte->terrain[carte->posPerso+1-carte->largeur].type<MUR&&carte->terrain[carte->posPerso+1-carte->largeur].voile<MUR){
+        carte->terrain[carte->posPerso+2-carte->largeur].voile=set;
+    }
+}
 int eventPerso(Carte *carte , int event){
     int out=1;
     if(carte->terrain[carte->posPerso].type==MUR||carte->terrain[carte->posPerso].type==MUR_SALLE||carte->terrain[carte->posPerso].type==MUR_CHEMIN){
@@ -29,11 +79,14 @@ int eventPerso(Carte *carte , int event){
         out=1;
         carte->terrain[carte->posPerso].object=TREASOR_OPEN;
     }
+    setShowTile(carte , SHOW);
     return out;
 }
 int moveCharacter(Carte *carte,CarteSDL* carteSDL){
     SDL_Event event;
     int continuer=1 , zoom=75, rafraichissement=0 , position=99999;
+
+    setShowTile(carte , SHOW);
     position=afficherCarteZoom(carte , carteSDL , position , zoom , event.key.keysym.sym);
     while(continuer){
         if(SDL_PollEvent(&event)){
@@ -42,24 +95,28 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                     switch(event.key.keysym.sym){
                         case SDLK_UP :
                             if(!event.key.repeat){
+                                setShowTile(carte , VISITED);
                                 carte->posPerso-=carte->largeur;
                                 rafraichissement=eventPerso(carte , HAUT);
                             }
                             break;
                         case SDLK_DOWN :
                             if(!event.key.repeat){
+                                setShowTile(carte , VISITED);
                                 carte->posPerso+=carte->largeur;
                                 rafraichissement=eventPerso(carte , BAS);
                             }
                             break;
                         case SDLK_RIGHT :
                             if(!event.key.repeat){
+                                setShowTile(carte , VISITED);
                                 carte->posPerso++;
                                 rafraichissement=eventPerso(carte , DROITE);
                             }
                             break;
                         case SDLK_LEFT :
                             if(!event.key.repeat){
+                                setShowTile(carte , VISITED);
                                 carte->posPerso--;
                                 rafraichissement=eventPerso(carte , GAUCHE);
                             }
@@ -97,6 +154,8 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                                 position=99999;
                             }
                             break;
+                        case SDLK_e :
+
                     }
                     break;
                 case SDL_QUIT :

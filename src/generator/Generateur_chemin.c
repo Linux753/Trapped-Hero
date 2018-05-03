@@ -199,9 +199,11 @@ int dessinerChemin(Carte *carte , int position , int nbCase,  int direction , in
     return i;
 }
 void dessinerPorte(Carte* carte){
-    int i=0  , salleNb=carte->nbSalle , compteurPorte=0, compteur=0 , *posMur=NULL , position=0 , continuer=0 , compteur2 = 0 , porte1=0 , porte2=0 , verificateur=0 , numero=100 , nb=60;
+    //printf("dessinerPorte");
+    int i=0  , salleNb=carte->nbSalle , compteurPorte=0, compteur=0 , *posMur=NULL , position=0 , continuer=0 , compteur2 = 0 , porte1=0 , porte2=0 , verificateur=0 , numero=100 , *orientation=NULL , test=0;
     for(salleNb=carte->nbSalle; salleNb>0; salleNb--){
         compteur=0 , compteur2=0;
+        orientation=malloc(carte->largeur*carte->hauteur*sizeof(int));
         posMur = malloc((carte->largeur/5)*(carte->largeur/5)*sizeof(int));
         for(i=0;i<(carte->largeur/5)*(carte->largeur/5); i++){
             posMur[i]=0;
@@ -241,11 +243,11 @@ void dessinerPorte(Carte* carte){
                     compteur2++;
                 }
                 else if(carte->terrain[posMur[position]+1].type==MUR_SALLE&&carte->terrain[posMur[position]-1].type==MUR_SALLE){
-                    carte->terrain[posMur[position]].orientation=HORIZONTALE;
+                    orientation[posMur[position]]=HORIZONTALE;
                     continuer=0;
                 }
                 else if(carte->terrain[posMur[position]+carte->largeur].type==MUR_SALLE&&carte->terrain[posMur[position]-carte->largeur].type==MUR_SALLE){
-                    carte->terrain[posMur[position]].orientation=VERTICALE;
+                    orientation[posMur[position]]=VERTICALE;
                     continuer=0;
                 }
                 else{
@@ -255,12 +257,12 @@ void dessinerPorte(Carte* carte){
                 }
             }while(continuer);
         }
-        if(carte->terrain[posMur[position]].orientation==HORIZONTALE){
+        if(orientation[posMur[position]]==HORIZONTALE){
             if(carte->terrain[posMur[position]+carte->largeur].type==SOL_SALLE&&carte->terrain[posMur[position]-carte->largeur].type==SOL_SALLE){
                 carte->terrain[posMur[position]].type=MUR_SALLE;
             }
         }
-        else if(carte->terrain[posMur[position]].orientation==VERTICALE){
+        else if(orientation[posMur[position]]==VERTICALE){
             if(carte->terrain[posMur[position]+1].type==SOL_SALLE&&carte->terrain[posMur[position]-1].type==SOL_SALLE){
                 carte->terrain[posMur[position]].type=MUR_SALLE;
             }
@@ -278,7 +280,7 @@ void dessinerPorte(Carte* carte){
                 porte1=posMur[position];
             }
             if(porte2!=0){
-                if(carte->terrain[porte2].orientation==HORIZONTALE){
+                if(orientation[porte2]==HORIZONTALE){
                     if(carte->terrain[porte2+carte->largeur].type==SOL_SALLE){
                         porte2=porte2-carte->largeur;
                     }
@@ -296,12 +298,11 @@ void dessinerPorte(Carte* carte){
                 }
                 compteurPorte++;
                 verificateur=aller(carte , porte1 , porte2 , &numero);
-                //printf("%d verif =%d\n"  , compteurPorte , verificateur);
-                //scanf("%d" , &compteurPorte);
             }
         }
         free(posMur);
         posMur = NULL;
+        free(orientation);
     }
 }
 int eloignerPorte(Carte *carte ,int *position , int *direction) {
@@ -671,7 +672,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
     while(nouvellePos!=destination){
         if(numeroContourner>1000){
             *numero=numeroContourner;
+            printf("1\n");
             return 1;
+
         }
         bonHorizontale=1;
         collision=0;
@@ -698,7 +701,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 /*nouvellePos=*/contourner(carte , nouvellePos , HAUT , destination , numeroContourner);
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("2\n");
                     return 1;
+
                 }
                 numeroContourner++;
             }
@@ -712,7 +717,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 numeroContourner++;
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("3\n");
                     return 1;
+
                 }
                 bonHorizontale=0;
                 collision=0;
@@ -725,7 +732,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 /*nouvellePos=*/contourner(carte , nouvellePos , BAS , destination , numeroContourner);
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("4\n");
                     return 1;
+
                 }
                 numeroContourner++;
             }
@@ -739,7 +748,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 numeroContourner++;
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("5\n");
                     return 1;
+
                 }
                 bonHorizontale=0;
                 collision=0;
@@ -753,7 +764,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 /*nouvellePos=*/contourner(carte , nouvellePos , GAUCHE , destination , numeroContourner);
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("6\n");
                     return 1;
+
                 }
                 numeroContourner++;
             }
@@ -767,7 +780,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 numeroContourner++;
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("7\n");
                     return 1;
+
                 }
                 bonVerticale=0;
                 collision=0;
@@ -780,7 +795,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 /*nouvellePos=*/contourner(carte , nouvellePos , DROITE , destination , numeroContourner);
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("8\n");
                     return 1;
+
                 }
                 numeroContourner++;
             }
@@ -794,7 +811,9 @@ int aller(Carte *carte , int position , int destination , int *numero ){
                 numeroContourner++;
                 if(nouvellePos==-1){
                     *numero=numeroContourner;
+                    printf("9\n");
                     return 1;
+
                 }
                 bonVerticale=0;
                 collision=0;

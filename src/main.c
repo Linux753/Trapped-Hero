@@ -28,12 +28,13 @@ int main()
     else if(out!=-1){
         if(out==PLAY){
             carte =generateurCarteAlea(100 , 100 );
-            sprintf(carte->path , "carte/carte%d/carte1.txt" , choice);
             carte->numGame=choice;
+            initGame(carte);
         }
         else if(out==LOAD){
-            carte=lireCarte(choice);
+            carte=loadGame(choice);
         }
+        fprintf(stderr , "%d" , carte);
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);
         quitterJeu(carte , carteSDL);

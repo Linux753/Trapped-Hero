@@ -321,75 +321,70 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
         }
     }
     i=position;
+        SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38 , 100);
         while(compteurH<tileNbH+1){
         rect.y=y;
         rect.x=compteurW*taille;
         rect.w=taille;
         rect.h=taille;
         //Loading tile
-        switch(carte->terrain[i].type){
-            case VIDE :
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
-                texture=carteSDL->vide;
-                break;
-            case CHEMIN :
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
-                texture=carteSDL->chemin[carte->terrain[i].numeroTile];
-                break;
-            case MUR:
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                texture=carteSDL->mur[carte->terrain[i].numeroTile];
-                break;
-            case MUR_SALLE :
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                texture=carteSDL->mur[carte->terrain[i].numeroTile];
-                break;
-            case SOL_SALLE :
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->chemin[carte->terrain[i].numeroTile] , NULL  , &rect );
-                texture=carteSDL->chemin[carte->terrain[i].numeroTile];
-                break;
-            case PORTE :
-//                if(carte->terrain[i].orientation==HORIZONTALE){
-//                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-//                }
-//                else if(carte->terrain[i].orientation==VERTICALE){
-//                    SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-//                }
-                texture=carteSDL->porte;
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->porte , NULL  , &rect );
-                break;
-            case MUR_CHEMIN :
-//                SDL_RenderCopy(carteSDL->renderer , carteSDL->mur[carte->terrain[i].numeroTile] , NULL  , &rect );
-                texture=carteSDL->mur[carte->terrain[i].numeroTile];
-                break;
+        if(carte->terrain[i].voile==HIDDEN){
+            SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
         }
-        //Now copy the texture of tile on the renderer
-        if(texture!=NULL){
-            SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
-            texture=NULL;
-        }
-        //Loading object
-        switch(carte->terrain[i].object){
-            case ESCALIER_HAUT :
-                texture=carteSDL->escalierHaut;
-                break;
-            case ESCALIER_BAS :
-                texture=carteSDL->escalierBas;
-                break;
-            case COFFRE :
-                texture=carteSDL->treasor;
-                break;
-            case TREASOR_OPEN :
-                texture=carteSDL->treasorOpen;
-                break;
-        }
-        //Now copy the texture of object on the renderer
-        if(texture!=NULL){
-            SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
-            texture=NULL;
-        }
-        if(i==carte->posPerso){
-            SDL_RenderCopy(carteSDL->renderer , carteSDL->personnage , NULL  , &rect );
+        else{
+            switch(carte->terrain[i].type){
+                case VIDE :
+                    texture=carteSDL->vide;
+                    break;
+                case CHEMIN :
+                    texture=carteSDL->chemin[carte->terrain[i].numeroTile];
+                    break;
+                case MUR:
+                    texture=carteSDL->mur[carte->terrain[i].numeroTile];
+                    break;
+                case MUR_SALLE :
+                    texture=carteSDL->mur[carte->terrain[i].numeroTile];
+                    break;
+                case SOL_SALLE :
+                    texture=carteSDL->chemin[carte->terrain[i].numeroTile];
+                    break;
+                case PORTE :
+                    texture=carteSDL->porte;
+                    break;
+                case MUR_CHEMIN :
+                    texture=carteSDL->mur[carte->terrain[i].numeroTile];
+                    break;
+            }
+            //Now copy the texture of tile on the renderer
+            if(texture!=NULL){
+                SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+                texture=NULL;
+            }
+            //Loading object
+            switch(carte->terrain[i].object){
+                case ESCALIER_HAUT :
+                    texture=carteSDL->escalierHaut;
+                    break;
+                case ESCALIER_BAS :
+                    texture=carteSDL->escalierBas;
+                    break;
+                case COFFRE :
+                    texture=carteSDL->treasor;
+                    break;
+                case TREASOR_OPEN :
+                    texture=carteSDL->treasorOpen;
+                    break;
+            }
+            //Now copy the texture of object on the renderer
+            if(texture!=NULL){
+                SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+                texture=NULL;
+            }
+            if(i==carte->posPerso){
+                SDL_RenderCopy(carteSDL->renderer , carteSDL->personnage , NULL  , &rect );
+            }else if(carte->terrain[i].voile==VISITED){
+                SDL_RenderFillRect(carteSDL->renderer , &rect);
+            }
         }
         if(compteurW==tileNbW){
             compteurW=0;
