@@ -3,6 +3,6 @@ obj
 Trapped-Hero.cbp
 Trapped-Hero.depend
 Trapped-Hero.layout
-carte/carte1/carte1.txt
-carte/carte2/carte1.txt
-carte/carte3/carte1.txt
+carte/carte1/*.txt
+carte/carte2/*.txt
+carte/carte3/*.txt

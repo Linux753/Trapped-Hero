@@ -3,8 +3,23 @@
 #include <SDL2/SDL.h>
 #include "../include/structure.h"
 #include "../include/Afficher_carte.h"
+#include "../include/enregistrer_carte.h"
+#include "../include/Generateur_carte_alea.h"
 void floorDown(Carte *carte){
-    /*Remplir ici*/
+    int floor=0 , nbFloor=0 , numGame=0;
+    char pathGame[50];
+    enregistrerCarte(carte);
+    floor=carte->floor+1;
+    nbFloor=carte->nbFloor+1;
+    numGame=carte->numGame;
+    quitterGenerateur(carte);
+    carte=generateurCarteAlea(100 , 100);
+    carte->nbFloor=nbFloor;
+    carte->floor=floor;
+    carte->numGame=numGame;
+    sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
+    sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
+    majGame(carte , pathGame);
 }
 void annulerMouvement(Carte* carte , int event){
     switch(event){
@@ -155,7 +170,14 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             }
                             break;
                         case SDLK_e :
-
+                                if(carte->terrain[carte->posPerso].object==ESCALIER_BAS){
+                                    floorDown(carte);
+                                    rafraichissement=1;
+                                    printf("Down");
+                                    position=99999;
+                                }
+                                fprintf(stderr , "%d\n" , carte->terrain[carte->posPerso].type);
+                            break;
                     }
                     break;
                 case SDL_QUIT :

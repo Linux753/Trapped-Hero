@@ -382,7 +382,8 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
             }
             if(i==carte->posPerso){
                 SDL_RenderCopy(carteSDL->renderer , carteSDL->personnage , NULL  , &rect );
-            }else if(carte->terrain[i].voile==VISITED){
+            }
+            else if(carte->terrain[i].voile==VISITED){
                 SDL_RenderFillRect(carteSDL->renderer , &rect);
             }
         }

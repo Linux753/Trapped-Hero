@@ -12,10 +12,26 @@ void quitterInitGame(FILE *file){
         fclose(file);
     }
 }
+int majGame(Carte* carte , char* pathGame){
+    FILE *file=NULL;
+    file=fopen(pathGame , "w+");
+    if(file==NULL){
+        fprintf(stderr , "Erreur open file %s" , pathGame);
+        quitterInitGame(file);
+        return -1;
+    }
+    fprintf(file , "nbFloor[%d] actualFloor[[%s]" , carte->nbFloor , carte->path);
+    fprintf(file , "[%d]]" , carte->floor);
+    quitterInitGame(file);
+    return 0;
+}
 int initGame(Carte *carte){
     FILE *file=NULL;
     int nbFloor=0 , i=0;
     char pathGame[50] , pathMap[50];
+    sprintf(carte->path , "carte/carte%d/carte1.txt" , carte->numGame);
+    carte->nbFloor=1;
+    carte->floor=1;
     sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
     file=fopen(pathGame , "r");
     if(file==NULL){
@@ -29,20 +45,7 @@ int initGame(Carte *carte){
         remove(pathMap);
     }
     quitterInitGame(file);
-    file=NULL;
-    file=fopen(pathGame , "w+");
-    if(file==NULL){
-        fprintf(stderr , "Erreur open file %s" , pathGame);
-        quitterInitGame(file);
-        return -1;
-    }
-    sprintf(carte->path , "carte/carte%d/carte1.txt" , carte->numGame);
-    printf("ICI");
-    fprintf(file , "nbFloor[1] actualFloor[[%s]" , carte->path);
-    fprintf(file , "actualFloor[1]");
-    carte->nbFloor=1;
-    carte->floor=1;
-    quitterInitGame(file);
+    majGame(carte , pathGame);
     return 0;
 }
 void quitterLoadGame(Carte *carte , FILE *file){
@@ -72,7 +75,7 @@ Carte* loadGame(int choice){
         return NULL;
     }
     fscanf(file , "nbFloor[%d] actualFloor[[%[^\]]s" , &(carte->nbFloor) ,&(carte->path));
-    fscanf(file , "]actualFloor[%d]" , &(carte->floor));
+    fscanf(file , "][%d]]" , &(carte->floor));
     fprintf(stderr , "%s\n" , carte->path);
     lireCarte(carte);
     quitterLoadGame(NULL , file);
