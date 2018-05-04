@@ -34,7 +34,6 @@ int main()
         else if(out==LOAD){
             carte=loadGame(choice);
         }
-        fprintf(stderr , "%d" , carte);
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);
         quitterJeu(carte , carteSDL);

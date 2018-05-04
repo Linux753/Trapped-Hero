@@ -118,12 +118,18 @@ Carte* generateurCarteAlea(int largeur , int hauteur ){
 }
 void quitterGenerateur(Carte *carte){
     //printf("quitterGenerateur");
-    free(carte->terrain);
-    carte->terrain=NULL;
-    free(carte->position);
-    carte->position=NULL;
-    free(carte->blackListRoom);
-    carte->blackListRoom=NULL;
+    if(carte->terrain!=NULL){
+        free(carte->terrain);
+        carte->terrain=NULL;
+    }
+    if(carte->position!=NULL){
+        free(carte->position);
+        carte->position=NULL;
+    }
+    if(carte->blackListRoom!=NULL){
+        free(carte->blackListRoom);
+        carte->blackListRoom=NULL;
+    }
     free(carte);
 }
 void quitterJeu(Carte *carte , CarteSDL *carteSDL){
