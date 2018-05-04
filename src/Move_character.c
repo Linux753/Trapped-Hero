@@ -5,21 +5,48 @@
 #include "../include/Afficher_carte.h"
 #include "../include/enregistrer_carte.h"
 #include "../include/Generateur_carte_alea.h"
-void floorDown(Carte *carte){
+#define UP -1
+#define DOWN +1
+
+Carte* loadFloor(Carte* carte , int change ){
+    int  numGame=0;
+    char pathGame[50];
+    enregistrerCarte(carte);
+    carte->floor=carte->floor+(1*change);
+    numGame=carte->numGame;
+    sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
+    sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
+    majGame(carte, pathGame);
+    quitterGenerateur(carte);
+    carte=loadGame(numGame);
+    return carte;
+}
+Carte* floorDown(Carte* carte){
     int floor=0 , nbFloor=0 , numGame=0;
     char pathGame[50];
+    if(carte->nbFloor>carte->floor){
+        carte=loadFloor(carte , DOWN);
+        return carte;
+    }
     enregistrerCarte(carte);
     floor=carte->floor+1;
     nbFloor=carte->nbFloor+1;
     numGame=carte->numGame;
+    fprintf(stderr , "%d" , carte);
     quitterGenerateur(carte);
     carte=generateurCarteAlea(100 , 100);
+    fprintf(stderr , "\n%d" , carte);
     carte->nbFloor=nbFloor;
     carte->floor=floor;
     carte->numGame=numGame;
     sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
     sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
     majGame(carte , pathGame);
+    return carte;
+}
+Carte* floorUp(Carte* carte){
+    carte= loadFloor(carte , UP);
+    return carte;
 }
 void annulerMouvement(Carte* carte , int event){
     switch(event){
@@ -171,12 +198,16 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             break;
                         case SDLK_e :
                                 if(carte->terrain[carte->posPerso].object==ESCALIER_BAS){
-                                    floorDown(carte);
+                                    carte=floorDown(carte);
                                     rafraichissement=1;
-                                    printf("Down");
                                     position=99999;
                                 }
-                                fprintf(stderr , "%d\n" , carte->terrain[carte->posPerso].type);
+                                else if(carte->terrain[carte->posPerso].object==ESCALIER_HAUT && carte->floor>1){
+                                    carte=floorUp(carte);
+                                    rafraichissement=1;
+                                    position=99999;
+                                }
+                                fprintf(stderr , "\n%d\n" , carte->nbFloor);
                             break;
                     }
                     break;

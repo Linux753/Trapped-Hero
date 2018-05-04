@@ -61,6 +61,8 @@ Carte* loadGame(int choice){
     Carte *carte=NULL;
     char path[50];
     carte=malloc(sizeof(Carte));
+    carte->position=NULL;
+    carte->blackListRoom=NULL;
     if(carte==NULL){
         fprintf(stderr , "Erreur allocation mémoire\n");
         quitterLoadGame(carte , file);
@@ -77,7 +79,7 @@ Carte* loadGame(int choice){
     fscanf(file , "nbFloor[%d] actualFloor[[%[^\]]s" , &(carte->nbFloor) ,&(carte->path));
     fscanf(file , "][%d]]" , &(carte->floor));
     fprintf(stderr , "%s\n" , carte->path);
-    lireCarte(carte);
+    lireCarte(carte , choice);
     quitterLoadGame(NULL , file);
     fprintf(stderr , "%d" , carte->terrain[carte->posPerso].voile);
     fprintf(stderr , "%d\n" , carte);
@@ -127,7 +129,7 @@ void quitterLireCarte(Carte *carte , FILE *file){
     }
 }
 
-int lireCarte(Carte *carte){
+int lireCarte(Carte *carte ,int choice){
     FILE *file=NULL;
     int i=0 , vide=0;
     file=fopen( carte->path ,"r");
@@ -137,10 +139,17 @@ int lireCarte(Carte *carte){
         return NULL;
     }
     if(EOF==fscanf(file , "vide[%d]" , &vide )){
+        quitterGenerateur(carte);
         carte=generateurCarteAlea(100 , 100);
+        printf("%d\n" , carte->numGame);
+        carte->numGame=choice;
+        initGame(carte);
     }
     else if(vide==1){
+        quitterGenerateur(carte);
         carte=generateurCarteAlea(100 , 100);
+        carte->numGame=choice;
+        initGame(carte);
     }
     else{
         fscanf(file , " l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , &carte->largeur , &carte->hauteur , &carte->nbSalle , &carte->compteur , &carte->nbBlackListRoom , &carte->posPerso);
@@ -177,7 +186,6 @@ int lireCarte(Carte *carte){
             fscanf(file , "[[%d][%d][%d][%d][%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].object , &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
         }
     }
-    sprintf(carte->path ,  "carte/carte%d/carte1.txt" , carte->numGame);
     quitterLireCarte(NULL , file);
     return 0;
 }

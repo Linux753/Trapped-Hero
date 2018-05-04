@@ -1,6 +1,10 @@
 #ifndef MOVE_CHARACTER_H_INCLUDED
 #define MOVE_CHARACTER_H_INCLUDED
+#include "structure.h"
+
 int moveCharacter(Carte *carte,CarteSDL* carteSDL );
-void floorDown(Carte *carte);
+Carte* floorDown(Carte *carte);
+Carte* floorUp(Carte *carte);
+Carte* loadFloor(Carte* carte , int change );
 
 #endif // MOVE_CHARACTER_H_INCLUDED
