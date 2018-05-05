@@ -32,8 +32,10 @@ Carte* floorDown(Carte* carte){
     floor=carte->floor+1;
     nbFloor=carte->nbFloor+1;
     numGame=carte->numGame;
+    fprintf(stderr , "%d" , carte);
     quitterGenerateur(carte);
     carte=generateurCarteAlea(100 , 100);
+    fprintf(stderr , "\n%d" , carte);
     carte->nbFloor=nbFloor;
     carte->floor=floor;
     carte->numGame=numGame;
