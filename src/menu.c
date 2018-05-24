@@ -218,58 +218,53 @@ int menuSave(CarteSDL* carteSDL){
         if(SDL_PointInRect(&mousePos , &game1->rectSelect)==SDL_TRUE){
             if(game1->select!=1){
                 game1->select=1;
+                if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+                    fprintf(stderr , "Erreur printMenuSave()\n");
+                    quitterMenuSave(game1 , game2 , game3);
+                    return -1;
+                }
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
                 SDL_RenderDrawRect(carteSDL->renderer , &game1->rectSelect);
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
-        else{
-            if(game1->select!=0){
-                game1->select=0;
+        else if(SDL_PointInRect(&mousePos , &game2->rectSelect)==SDL_TRUE){
+            if(game2->select!=1){
+                game2->select=1;
                 if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
                     fprintf(stderr , "Erreur printMenuSave()\n");
                     quitterMenuSave(game1 , game2 , game3);
                     return -1;
                 }
-                SDL_RenderPresent(carteSDL->renderer);
-            }
-        }
-        if(SDL_PointInRect(&mousePos , &game2->rectSelect)==SDL_TRUE){
-            if(game2->select!=1){
-                game2->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
                 SDL_RenderDrawRect(carteSDL->renderer  , &game2->rectSelect);
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
-        else{
-            if(game2->select!=0){
-                game2->select=0;
+        else if(SDL_PointInRect(&mousePos , &game3->rectSelect)==SDL_TRUE){
+            if(game3->select!=1){
+                game3->select=1;
                 if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
                     fprintf(stderr , "Erreur printMenuSave()\n");
                     quitterMenuSave(game1 , game2 , game3);
                     return -1;
                 }
-                SDL_RenderPresent(carteSDL->renderer);
-            }
-        }
-        if(SDL_PointInRect(&mousePos , &game3->rectSelect)==SDL_TRUE){
-            if(game3->select!=1){
-                game3->select=1;
                 SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
                 SDL_RenderDrawRect(carteSDL->renderer  , &game3->rectSelect);
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }
         else{
-            if(game3->select!=0){
-                game3->select=0;
-                if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
-                    fprintf(stderr , "Erreur printMenuSave()\n");
-                    quitterMenuSave(game1 , game2 , game3);
-                    return -1;
-                }
-                SDL_RenderPresent(carteSDL->renderer);
+            if(game3->select!=0 || game2->select!=0 || game1->select!=0){
+              game3->select=0;
+              game1->select=0;
+              game2->select=0;
+              if(0!=printMenuSave(carteSDL , game1 , game2 , game3)){
+                  fprintf(stderr , "Erreur printMenuSave()\n");
+                  quitterMenuSave(game1 , game2 , game3);
+                  return -1;
+              }
+              SDL_RenderPresent(carteSDL->renderer);
             }
         }
     }
