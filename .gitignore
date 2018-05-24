@@ -1,8 +1,1 @@
-bin
-Trapped-Hero.cbp
-Trapped-Hero.depend
-Trapped-Hero.layout
-carte/carte1/*.txt
-carte/carte2/*.txt
-carte/carte3/*.txt
-*.o
+*.txt
