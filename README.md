@@ -15,9 +15,9 @@ SDL2 ttf
 SDL2 image
 
 The controls are:
-The directional arrows to move around on the map.
-Q to quit the game
-f11 to exit full screen mode (does not work on Windows for now)
+- The directional arrows to move around on the map.
+- Q to quit the game
+- f11 to exit full screen mode (does not work on Windows for now)
 
 __**Français**__ :
 Je souhaite réaliser un rogue like possédant un système de combat évolué (plusieurs choix d'attaque) et une création de personnage complexe. Ainsi qu'une carte généré aléatoirement.
@@ -32,7 +32,13 @@ SDL2 ttf
 SDL2 image
 
 Les commandes sont :
-Les flêches directionnelles pour se déplacer sur la carte.
-Q pour quitter le jeu
-f11 pour quitter le mode plein écran (ne fonctionne pas sous Windows pour l'instant)
-E pour monter ou descendre d'étage (seulent sur les escalier bien sur)
+- Les flêches directionnelles pour se déplacer sur la carte.
+- Q pour quitter le jeu
+- f11 pour quitter le mode plein écran (ne fonctionne pas sous Windows pour l'instant)
+- E pour monter ou descendre d'étage (seulent sur les escalier bien sur)
+
+Voici quelques image du jeu :
+
+![Le menu principal](/media/galleries/4648/577b59f8-2897-461b-98ee-6b0a313ab97b.png)
+
+![Le jeu](/media/galleries/4648/96ec87a8-d53b-441c-bf7c-6d7ee6862073.png)
