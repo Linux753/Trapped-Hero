@@ -39,6 +39,6 @@ Les commandes sont :
 
 Voici quelques image du jeu :
 
-![Le menu principal](/media/galleries/4648/577b59f8-2897-461b-98ee-6b0a313ab97b.png)
+![Le menu principal](https://zestedesavoir.com/media/galleries/4648/96ec87a8-d53b-441c-bf7c-6d7ee6862073.png)
 
-![Le jeu](/media/galleries/4648/96ec87a8-d53b-441c-bf7c-6d7ee6862073.png)
+![Le jeu](https://zestedesavoir.com/media/galleries/4648/577b59f8-2897-461b-98ee-6b0a313ab97b.png)
