@@ -27,11 +27,45 @@
 #define PATH "carte/carte%d/carte1.txt"
 #include <SDL2/SDL.h>
 
+typedef enum Type Type;
+enum Type{
+    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor
+};
+typedef enum TypeAttaque TypeAttaque;
+enum TypeAttaque{
+    Nulle , Arcane , Tranchant , Froid , Feu , Perforant , Contendant
+};
+typedef struct Objet Objet;
+struct Objet{
+    char nom[50];
+    Type type;
+    TypeAttaque typeAttaque;
+    float poids;
+    int resistance;
+    int resistanceMagique;
+    int attaque;
+    int attaqueMax;
+    int caracteristiqueCritique;
+    int precision;
+    int habilete;
+    int magie;
+    char description[5000];
+    int probabilite;
+    int rarete;
+    int niveau;
+    int nbEtage;
+    int x;
+    int y;
+    int numMin;
+    int numMax;
+    SDL_Texture *texture;
+};
 typedef struct Terrain Terrain;
 struct Terrain{
-    int type;
+    Type type;
+    int tresor;//Corespond a la case de l'objet que le tresor contient -1
+    int objet;//Corespond a la case de l'objet -1
     int numeroSalle;
-    int object;
     char numeroTile;
     char voile;
 };
@@ -59,6 +93,9 @@ struct Carte{
     int floor;
     int nbFloor;
     char path[50];
+    Objet *listeObjet;
+    int nbObjet;
+    int numMax;
 };
 typedef struct CarteSDL CarteSDL;
 struct CarteSDL{
@@ -81,4 +118,14 @@ struct Button{
     SDL_Texture *text;
     int select;
 };
+typedef struct Personnage Personnage;
+struct Personnage{
+    int vie;
+    Objet* inventaire;
+    Objet armure;
+    Objet arme;
+    Objet or;
+    int force;
+};
+
 #endif // STRUCTURE_H_INCLUDED

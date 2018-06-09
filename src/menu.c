@@ -61,7 +61,7 @@ void demarrage(CarteSDL* sdlVar){
     SDL_QueryTexture(textSDL , NULL , NULL , &rectTextSDL.w , &rectTextSDL.h);
     rectTextSDL.x=(w/2)-(rectTextSDL.w/2);
     rectTextSDL.y=((rectImage1.y)/2)-rectTextSDL.h;
-    ecrireTextSDL(sdlVar , "police/OpenSans-Regular.ttf" , "Special thanks to Mr Dator for the compilation on windows", 40  , &specialThank , &colorFg , NULL );
+    ecrireTextSDL(sdlVar , "police/OpenSans-Regular.ttf" , "Special thanks to Kyrela for the object's tiles", 40  , &specialThank , &colorFg , NULL );
     SDL_QueryTexture(specialThank , NULL , NULL , &rectSpecialThank.w , &rectSpecialThank.h);
     rectSpecialThank.x=(w/2)-(rectSpecialThank.w/2);
     rectSpecialThank.y=h-(h/10);

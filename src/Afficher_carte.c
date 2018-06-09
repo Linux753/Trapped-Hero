@@ -125,15 +125,15 @@ int loadTileset(CarteSDL *carteSDL){
         goto loadTilesetQuit;
     }
     SDL_QueryTexture(tileset , NULL , NULL  , &wTileset , &hTileset);
-    sizeTileW=wTileset/6;
-    sizeTileH=hTileset/2;
+    sizeTileW=32;
+    sizeTileH=32;
     if(0!=loadIMG(carteSDL , "image/monsters.png" , &monster)){
         out=-1;
         goto loadTilesetQuit;
     }
     SDL_QueryTexture(monster , NULL , NULL  , &wMonster , &hMonster);
-    sizeMonsterW=wMonster/1;
-    sizeMonsterH=hMonster/1;
+    sizeMonsterW=32;
+    sizeMonsterH=32;
     if(0!=initialiserTile(carteSDL , sizeTileW , sizeTileH)){
         out=-1;
         goto loadTilesetQuit;
@@ -361,23 +361,50 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
                 texture=NULL;
             }
             //Loading object
-            switch(carte->terrain[i].object){
-                case ESCALIER_HAUT :
-                    texture=carteSDL->escalierHaut;
+            switch(carte->terrain[i].tresor){
+                case -1:
+                    texture=NULL;
                     break;
-                case ESCALIER_BAS :
-                    texture=carteSDL->escalierBas;
+                case -2:
+                    texture=carteSDL->treasorOpen;
                     break;
-                case COFFRE :
+                default:
                     texture=carteSDL->treasor;
                     break;
-                case TREASOR_OPEN :
-                    texture=carteSDL->treasorOpen;
+            }
+            if(texture!=NULL){
+                SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+                texture=NULL;
+            }
+            texture=NULL;
+            switch(carte->terrain[i].objet){
+                case -1 :
+                    texture=NULL;
+                    break;
+                case -2 :
+                    texture=NULL;
+                    break;
+                case  0:
+                    texture=carteSDL->escalierBas;
+                    break;
+                case 1 :
+                    texture=carteSDL->escalierHaut;
+                    break;
+                default:
+                    texture=carte->listeObjet[carte->terrain[i].objet].texture;
+                    if(texture==NULL){
+                        printf("Ici il y a des variable qui ne devrait pas etre nul\n" );
+                    }else{
+                        printf("Ici et pas = NULL\n");
+                    }
                     break;
             }
             //Now copy the texture of object on the renderer
             if(texture!=NULL){
-                SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect );
+                printf("Et elle est bien copié\n");
+                if(0!=SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect )){
+                    printf("Ok mais erreur de printage\n" );
+                }
                 texture=NULL;
             }
             if(i==carte->posPerso){

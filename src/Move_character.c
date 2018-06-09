@@ -21,7 +21,7 @@ Carte* loadFloor(Carte* carte , int change ){
     carte=loadGame(numGame);
     return carte;
 }
-Carte* floorDown(Carte* carte){
+Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     int floor=0 , nbFloor=0 , numGame=0;
     char pathGame[50];
     if(carte->nbFloor>carte->floor){
@@ -32,10 +32,9 @@ Carte* floorDown(Carte* carte){
     floor=carte->floor+1;
     nbFloor=carte->nbFloor+1;
     numGame=carte->numGame;
-    fprintf(stderr , "%d" , carte);
     quitterGenerateur(carte);
     carte=generateurCarteAlea(100 , 100);
-    fprintf(stderr , "\n%d" , carte);
+    generateObject(carte , carteSDL);
     carte->nbFloor=nbFloor;
     carte->floor=floor;
     carte->numGame=numGame;
@@ -117,9 +116,11 @@ int eventPerso(Carte *carte , int event){
         out=0;
         annulerMouvement(carte , event);
     }
-    if(carte->terrain[carte->posPerso].object==COFFRE){
+    if(carte->terrain[carte->posPerso].tresor!=-1){
         out=1;
-        carte->terrain[carte->posPerso].object=TREASOR_OPEN;
+        printf("Voila l'objet sur leque tu te trouve : %d\n",carte->terrain[carte->posPerso].tresor);
+        carte->terrain[carte->posPerso].objet=carte->terrain[carte->posPerso].tresor;
+        carte->terrain[carte->posPerso].tresor=-2;
     }
     setShowTile(carte , SHOW);
     return out;
@@ -197,12 +198,12 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             }
                             break;
                         case SDLK_e :
-                                if(carte->terrain[carte->posPerso].object==ESCALIER_BAS){
-                                    carte=floorDown(carte);
+                                if(carte->terrain[carte->posPerso].objet==0){
+                                    carte=floorDown(carte , carteSDL);
                                     rafraichissement=1;
                                     position=99999;
                                 }
-                                else if(carte->terrain[carte->posPerso].object==ESCALIER_HAUT && carte->floor>1){
+                                else if(carte->terrain[carte->posPerso].objet==1 && carte->floor>1){
                                     carte=floorUp(carte);
                                     rafraichissement=1;
                                     position=99999;

@@ -35,8 +35,6 @@ void initialiserCarte(Carte *carte){
             carte->terrain[i].type=VIDE;
         }
         carte->terrain[i].numeroSalle=0;
-
-        carte->terrain[i].object=0;
         nbAlea=rand_a_b(1 , 101);
         if(nbAlea==98){
             carte->terrain[i].numeroTile=1;
@@ -48,6 +46,9 @@ void initialiserCarte(Carte *carte){
             carte->terrain[i].numeroTile=0;
         }
         carte->terrain[i].voile=HIDDEN;
+        carte->terrain[i].type=Rien;
+        carte->terrain[i].objet=-1;
+        carte->terrain[i].tresor=-1;
     }
     carte->compteur=0;
     carte->nbBlackListRoom=0;
@@ -85,7 +86,7 @@ void recenserRoom(Carte* carte){
     carte->position[sauvegardeNumero]=sauvegarde;
     carte->compteur--;
 }
-Carte* generateurCarteAlea(int largeur , int hauteur ){
+Carte* generateurCarteAlea(int largeur , int hauteur  ){
         //printf("generateurcarteAlea");
         Carte *carte=NULL;
         carte=malloc(sizeof(Carte));
@@ -113,7 +114,6 @@ Carte* generateurCarteAlea(int largeur , int hauteur ){
         fermerSalle(carte);
         dessinerPorte(carte);
         recenserRoom(carte);
-        generateObject(carte);
         return carte;
 }
 void quitterGenerateur(Carte *carte){

@@ -28,12 +28,15 @@ int main()
     else if(out!=-1){
         if(out==PLAY){
             carte =generateurCarteAlea(100 , 100 );
+
             carte->numGame=choice;
             initGame(carte);
+            generateObject(carte , carteSDL);
         }
         else if(out==LOAD){
             carte=loadGame(choice);
         }
+        printf("Et revoila le num de la carte : %d\n", carte->floor);
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);
         quitterJeu(carte , carteSDL);

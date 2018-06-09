@@ -3,7 +3,7 @@
 #include "structure.h"
 
 int moveCharacter(Carte *carte,CarteSDL* carteSDL );
-Carte* floorDown(Carte *carte);
+Carte* floorDown(Carte *carte , CarteSDL* carteSDL);
 Carte* floorUp(Carte *carte);
 Carte* loadFloor(Carte* carte , int change );
 

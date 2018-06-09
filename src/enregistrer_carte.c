@@ -103,7 +103,7 @@ int lireCarte(Carte *carte ,int choice){
         }
         fscanf(file , "\nterrain");
         for(i=0; i<carte->largeur*carte->hauteur; i++){
-            fscanf(file , "[[%d][%d][%d][%d][%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].object , &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
+            fscanf(file , "[[%d][%d][%d][%d][%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].objet , &carte->terrain[i].tresor, &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
         }
     }
     quitterLireCarte(NULL , file);
@@ -167,7 +167,7 @@ int enregistrerCarte(Carte *carte){
     }
     fprintf(file , "\nterrain");
     for(i=0; i<carte->largeur*carte->hauteur; i++){
-        fprintf(file , "[[%d][%d][%d][%d][%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle  , carte->terrain[i].object , carte->terrain[i].numeroTile , carte->terrain[i].voile);
+        fprintf(file , "[[%d][%d][%d][%d][%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle  , carte->terrain[i].objet  , carte->terrain[i].tresor, carte->terrain[i].numeroTile , carte->terrain[i].voile);
     }
     quitterEnregistrerCarte(file);
     return 0;
