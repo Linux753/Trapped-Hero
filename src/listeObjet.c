@@ -14,10 +14,11 @@ int calculerProbabilite(Objet *objet , Carte* carte , int numMax){
         return numMax;
     }
     else if(carte->floor>objet->niveau+objet->nbEtage){
+        printf("Etage : %d\n", carte->floor);
         probabilite=objet->rarete-(carte->floor-(objet->niveau+(objet->nbEtage/2)))*(carte->floor-(objet->niveau+(objet->nbEtage/2)));
         printf("%d\n", probabilite );
         objet->numMin=numMax+1;
-        objet->numMax=objet->numMin+probabilite;
+        objet->numMax=objet->numMin+probabilite*10;
         if(objet->numMax-objet->numMin<2){
             objet->numMax=objet->numMin+2;
         }
@@ -64,7 +65,7 @@ int chargerTexture(CarteSDL *carteSDL , SDL_Texture *image , Objet *objet){
     printf("Texture de %s créée\n", objet->nom);
     return 0;
 }
-int creerListe(Carte* carte , CarteSDL *carteSDL){
+int creerListe(CarteSDL *carteSDL){
     FILE* file=NULL;
     SDL_Texture *tileset=NULL;
     int i=0;
@@ -86,29 +87,30 @@ int creerListe(Carte* carte , CarteSDL *carteSDL){
     int rarete;
     int niveau;
     int nbEtage;
-    int x;
-    int y;
-    int w , h;
-    carte->numMax=0;
-    printf("Ceci est l'etage de la carte : %d\n",carte->floor );
+    int x=0;
+    int y=0;
+    int w=0 , h=0;
+    int protection=0;
+    carteSDL->numMax=0;
     file=fopen("carte/objetCarte/listeObjet.liste" , "r");
     if(file==NULL){
         printf("Et voila t bete\n" );
     }
-    fscanf(file ,"[%d][%d][%d]\n" , &(carte->nbObjet) , &w , &h);
-    carte->listeObjet=malloc(sizeof(Objet)*carte->nbObjet);
+    fscanf(file ,"[%d][%d][%d]\n" , &(carteSDL->nbObjet) , &w , &h);
+    carteSDL->listeObjet=malloc(sizeof(Objet)*carteSDL->nbObjet);
     if(0!=loadIMG(carteSDL , "image/objectTileset.png" , &tileset)){
         fprintf(stderr, "Erreur Chargement image\n" );
         return -1;
     }
-    for(i=0; i<carte->nbObjet; i++){
+    for(i=0; i<carteSDL->nbObjet; i++){
         fscanf(file, "[%[^\]]s" , nom);
         fscanf(file ,"][%[^\]]s" , description);
         printf("%s\n",description );
         printf("%d" , nbEtage);
-        fscanf(file , "][%d][%d][%f][%d][%d][%d][%d][%d][%d][%d][%d][%d][%d][%d]\n",&type , &typeAttaque , &poids , &resistance , &resistanceMagique, &attaque , &attaqueMax , &caracteristiqueCritique , &precision , &habilete , &magie , &probabilite , &niveau , &rarete);
-        fscanf(file ,"[%d][%d][%d]" , &nbEtage, &x , &y);
-        nouveau=&(carte->listeObjet[i]);
+        fscanf(file , "][%d][%d][%f][%d][%d][%d][%d][%d][%d][%d][%d][%d][%d][%d]",&type , &typeAttaque , &poids , &resistance , &resistanceMagique, &attaque , &attaqueMax , &caracteristiqueCritique , &precision , &habilete , &magie , &probabilite , &niveau , &rarete);
+        fscanf(file ,"[%d][%d][%d][%d]\n" , &nbEtage, &x , &y , &protection);
+        printf("Ici valeur y : %d\n",y );
+        nouveau=&(carteSDL->listeObjet[i]);
         switch(type){
             case 1:
                 nouveau->type=Rien;
@@ -146,6 +148,9 @@ int creerListe(Carte* carte , CarteSDL *carteSDL){
             case 12:
                 nouveau->type=Tresor;
                 break;
+            case 13:
+                nouveau->type=Fleche;
+                break;
         }
         switch (typeAttaque) {
             case 1:
@@ -172,6 +177,7 @@ int creerListe(Carte* carte , CarteSDL *carteSDL){
         }
         nouveau->poids=poids;
         nouveau->resistance=resistance;
+        nouveau->resistanceOriginale=resistance;
         nouveau->resistanceMagique=resistanceMagique;
         sprintf(nouveau->nom , nom);
         sprintf(nouveau->description , description);
@@ -183,17 +189,11 @@ int creerListe(Carte* carte , CarteSDL *carteSDL){
         nouveau->magie=magie;
         nouveau->probabilite=probabilite;
         nouveau->rarete=rarete;
-        printf("Et leur niveau: %d\n", niveau );
         nouveau->niveau=niveau;
         nouveau->nbEtage=nbEtage;
         nouveau->x=x;
-        if(i>1){
-            carte->numMax=calculerProbabilite(nouveau , carte , carte->numMax);
-        }
-        else{
-            nouveau->numMin=0;
-            nouveau->numMax=0;
-        }
+        nouveau->y=y;
+        nouveau->protection=protection;
         if(0!=chargerTexture(carteSDL , tileset , nouveau)){
             fprintf(stderr, "Erreur chargerTexture()\n" );
             return -1;

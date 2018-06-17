@@ -86,7 +86,7 @@ void recenserRoom(Carte* carte){
     carte->position[sauvegardeNumero]=sauvegarde;
     carte->compteur--;
 }
-Carte* generateurCarteAlea(int largeur , int hauteur  ){
+Carte* generateurCarteAlea(int largeur , int hauteur ){
         //printf("generateurcarteAlea");
         Carte *carte=NULL;
         carte=malloc(sizeof(Carte));

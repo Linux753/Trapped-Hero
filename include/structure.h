@@ -29,7 +29,7 @@
 
 typedef enum Type Type;
 enum Type{
-    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor
+    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor , Fleche
 };
 typedef enum TypeAttaque TypeAttaque;
 enum TypeAttaque{
@@ -41,7 +41,7 @@ struct Objet{
     Type type;
     TypeAttaque typeAttaque;
     float poids;
-    int resistance;
+    int resistance;//D'une armure ou alors le coefficient de protection du bouclier (le plus souvent de 1 à 10%)
     int resistanceMagique;
     int attaque;
     int attaqueMax;
@@ -58,6 +58,8 @@ struct Objet{
     int y;
     int numMin;
     int numMax;
+    int resistanceOriginale;
+    int protection;
     SDL_Texture *texture;
 };
 typedef struct Terrain Terrain;
@@ -93,12 +95,12 @@ struct Carte{
     int floor;
     int nbFloor;
     char path[50];
-    Objet *listeObjet;
-    int nbObjet;
-    int numMax;
 };
 typedef struct CarteSDL CarteSDL;
 struct CarteSDL{
+    int numMax;
+    Objet *listeObjet;
+    int nbObjet;
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture **mur;
@@ -121,11 +123,20 @@ struct Button{
 typedef struct Personnage Personnage;
 struct Personnage{
     int vie;
-    Objet* inventaire;
+    int *inventaire;
+    int force;
+    int masseObjet;
+    int armureNum;
     Objet armure;
     Objet arme;
-    Objet or;
-    int force;
+    int attaque;
+    int attaqueMax;
+    int habilete;
+    int precision;
+    int magie;
+    int agilite;
+    int protection;
+    Objet argent;
 };
 
 #endif // STRUCTURE_H_INCLUDED

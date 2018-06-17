@@ -6,11 +6,11 @@
 #include "../../include/listeObjet.h"
 
 
-int GenererObjetCoffre(Carte *carte){
+int GenererObjetCoffre(CarteSDL *carteSDL){
     int nbAlea , i=0;
-    nbAlea=rand_a_b(1 , carte->numMax);
-    printf("Nb alea :%d" , nbAlea);
-    while(!((carte->listeObjet[i].numMin<=nbAlea&&carte->listeObjet[i].numMax>=nbAlea))){
+    nbAlea=rand_a_b(1 , carteSDL->numMax);
+    printf("Nb alea :%d" , carteSDL->numMax);
+    while(!((carteSDL->listeObjet[i].numMin<=nbAlea&&carteSDL->listeObjet[i].numMax>=nbAlea))){
         i++;
     }
     printf("Num choisi : %d\n" , i);
@@ -26,17 +26,28 @@ void generateScale(Carte *carte){
     carte->posPerso=positionPerso;
     carte->compteur--;
 }
-void generateTreasor(Carte *carte){
+void generateTreasor(CarteSDL *carteSDL , Carte* carte){
     int i=0;
-
     for(i=0;i<carte->largeur/7;i++){
-        carte->terrain[carte->position[carte->compteur]].tresor=GenererObjetCoffre(carte );
+        carte->terrain[carte->position[carte->compteur]].tresor=GenererObjetCoffre(carteSDL );
         carte->compteur--;
     }
-    printf("ICI %d\n" , carte->numMax);
 }
 void generateObject(Carte *carte , CarteSDL *carteSDL){
-    creerListe(carte  , carteSDL);
+    int i=0;
+    Objet *nouveau;
     generateScale(carte);
-    generateTreasor(carte);
+    for(i=0; i<carteSDL->nbObjet; i++){
+        nouveau=&(carteSDL->listeObjet[i]);
+        printf("Et ici et %d\n", carteSDL->numMax );
+        if(i>1){
+
+            carteSDL->numMax=calculerProbabilite(nouveau , carte , carteSDL->numMax);
+        }
+        else{
+            nouveau->numMin=0;
+            nouveau->numMax=0;
+        }
+    }
+    generateTreasor(carteSDL , carte);
 }

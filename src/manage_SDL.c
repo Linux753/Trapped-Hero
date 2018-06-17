@@ -1,6 +1,7 @@
 #include "../include/structure.h"
 #include "../include/menu.h"
 #include "../include/Afficher_carte.h"
+#include "../include/monster.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -70,12 +71,16 @@ void quitterSDL(CarteSDL *carteSDL){
     if(carteSDL->personnage!=NULL){
         SDL_DestroyTexture(carteSDL->personnage);
     }
+    for(i=0; i>carteSDL->nbObjet; i++){
+        SDL_DestroyTexture(carteSDL->listeObjet[i].texture);
+    }
     if(carteSDL->renderer!=NULL){
         SDL_DestroyRenderer(carteSDL->renderer);
     }
     if(carteSDL->window!=NULL){
         SDL_DestroyWindow(carteSDL->window);
     }
+    free(carteSDL->listeObjet);
     TTF_Quit();
     SDL_Quit();
     free(carteSDL);
@@ -94,6 +99,7 @@ CarteSDL *initialiserCarteSDL(){
         fprintf(stderr , "Error SDL finish the print of the map");
         return NULL;
     }
+    
     return carteSDL;
 }
 

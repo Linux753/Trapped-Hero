@@ -8,7 +8,7 @@
 #define UP -1
 #define DOWN +1
 
-Carte* loadFloor(Carte* carte , int change ){
+Carte* loadFloor(Carte* carte , CarteSDL* carteSDL, int change ){
     int  numGame=0;
     char pathGame[50];
     enregistrerCarte(carte);
@@ -18,14 +18,14 @@ Carte* loadFloor(Carte* carte , int change ){
     sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
     majGame(carte, pathGame);
     quitterGenerateur(carte);
-    carte=loadGame(numGame);
+    carte=loadGame(numGame , carteSDL);
     return carte;
 }
 Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     int floor=0 , nbFloor=0 , numGame=0;
     char pathGame[50];
     if(carte->nbFloor>carte->floor){
-        carte=loadFloor(carte , DOWN);
+        carte=loadFloor(carte , DOWN , carteSDL);
         return carte;
     }
     enregistrerCarte(carte);
@@ -34,17 +34,17 @@ Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     numGame=carte->numGame;
     quitterGenerateur(carte);
     carte=generateurCarteAlea(100 , 100);
-    generateObject(carte , carteSDL);
     carte->nbFloor=nbFloor;
     carte->floor=floor;
     carte->numGame=numGame;
     sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
     sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
+    generateObject(carte , carteSDL);
     majGame(carte , pathGame);
     return carte;
 }
-Carte* floorUp(Carte* carte){
-    carte= loadFloor(carte , UP);
+Carte* floorUp(Carte* carte , CarteSDL *carteSDL){
+    carte= loadFloor(carte , UP , carteSDL);
     return carte;
 }
 void annulerMouvement(Carte* carte , int event){
@@ -116,11 +116,14 @@ int eventPerso(Carte *carte , int event){
         out=0;
         annulerMouvement(carte , event);
     }
-    if(carte->terrain[carte->posPerso].tresor!=-1){
+    if(carte->terrain[carte->posPerso].tresor!=-1&&carte->terrain[carte->posPerso].tresor!=-2){
         out=1;
         printf("Voila l'objet sur leque tu te trouve : %d\n",carte->terrain[carte->posPerso].tresor);
         carte->terrain[carte->posPerso].objet=carte->terrain[carte->posPerso].tresor;
         carte->terrain[carte->posPerso].tresor=-2;
+    }
+    else if(carte->terrain[carte->posPerso].tresor==-2){
+        carte->terrain[carte->posPerso].objet=-1;
     }
     setShowTile(carte , SHOW);
     return out;
@@ -204,7 +207,7 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                                     position=99999;
                                 }
                                 else if(carte->terrain[carte->posPerso].objet==1 && carte->floor>1){
-                                    carte=floorUp(carte);
+                                    carte=floorUp(carte , carteSDL);
                                     rafraichissement=1;
                                     position=99999;
                                 }

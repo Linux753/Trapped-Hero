@@ -17,6 +17,9 @@ int main()
     srand(time(NULL));
     dimension=rand_a_b(100 , 120);
     carteSDL=initialiserCarteSDL();
+
+    creerListe(carteSDL);
+    printf("Passé ici\n" );
     if(carteSDL==NULL){
         fprintf(stderr , "\nErreur\n");
         return -1;
@@ -28,15 +31,14 @@ int main()
     else if(out!=-1){
         if(out==PLAY){
             carte =generateurCarteAlea(100 , 100 );
-
             carte->numGame=choice;
             initGame(carte);
             generateObject(carte , carteSDL);
         }
         else if(out==LOAD){
-            carte=loadGame(choice);
+            carte=loadGame(choice , carteSDL);
+            creerListe(carte  , carteSDL);
         }
-        printf("Et revoila le num de la carte : %d\n", carte->floor);
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);
         quitterJeu(carte , carteSDL);

@@ -49,7 +49,7 @@ int initGame(Carte *carte){
     majGame(carte , pathGame);
     return 0;
 }
-int lireCarte(Carte *carte ,int choice){
+int lireCarte(Carte *carte ,int choice , CarteSDL *carteSDL){
     FILE *file=NULL;
     int i=0 , vide=0;
     file=fopen( carte->path ,"r");
@@ -60,16 +60,18 @@ int lireCarte(Carte *carte ,int choice){
     }
     if(EOF==fscanf(file , "vide[%d]" , &vide )){
         quitterGenerateur(carte);
-        carte=generateurCarteAlea(100 , 100);
+        carte=generateurCarteAlea(100 , 100 );
         printf("%d\n" , carte->numGame);
         carte->numGame=choice;
         initGame(carte);
+        generateObject(carte , carteSDL);
     }
     else if(vide==1){
         quitterGenerateur(carte);
-        carte=generateurCarteAlea(100 , 100);
+        carte=generateurCarteAlea(100 , 100 );
         carte->numGame=choice;
         initGame(carte);
+        generateObject(carte , carteSDL);
     }
     else{
         fscanf(file , " l[%d] h[%d] nbSalle[%d] compteur[%d] nbBlackListRoom[%d] posPerso[%d]\n" , &carte->largeur , &carte->hauteur , &carte->nbSalle , &carte->compteur , &carte->nbBlackListRoom , &carte->posPerso);
@@ -118,7 +120,7 @@ void quitterLoadGame(Carte *carte , FILE *file){
         free(carte);
     }
 }
-Carte* loadGame(int choice){
+Carte* loadGame(int choice , CarteSDL* carteSDL){
     FILE *file=NULL;
     Carte *carte=NULL;
     char path[50];
@@ -141,7 +143,7 @@ Carte* loadGame(int choice){
     fscanf(file , "nbFloor[%d] actualFloor[[%[^\]]s" , &(carte->nbFloor) ,&(carte->path));
     fscanf(file , "][%d]]" , &(carte->floor));
     fprintf(stderr , "%s\n" , carte->path);
-    lireCarte(carte , choice);
+    lireCarte(carte , choice , carteSDL);
     quitterLoadGame(NULL , file);
     fprintf(stderr , "%d" , carte->terrain[carte->posPerso].voile);
     return carte;

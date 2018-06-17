@@ -4,7 +4,7 @@
 
 int moveCharacter(Carte *carte,CarteSDL* carteSDL );
 Carte* floorDown(Carte *carte , CarteSDL* carteSDL);
-Carte* floorUp(Carte *carte);
-Carte* loadFloor(Carte* carte , int change );
+Carte* floorUp(Carte* carte , CarteSDL *carteSDL);
+Carte* loadFloor(Carte* carte , CarteSDL* carteSDL, int change );
 
 #endif // MOVE_CHARACTER_H_INCLUDED

@@ -391,17 +391,11 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
                     texture=carteSDL->escalierHaut;
                     break;
                 default:
-                    texture=carte->listeObjet[carte->terrain[i].objet].texture;
-                    if(texture==NULL){
-                        printf("Ici il y a des variable qui ne devrait pas etre nul\n" );
-                    }else{
-                        printf("Ici et pas = NULL\n");
-                    }
+                    texture=carteSDL->listeObjet[carte->terrain[i].objet].texture;
                     break;
             }
             //Now copy the texture of object on the renderer
             if(texture!=NULL){
-                printf("Et elle est bien copié\n");
                 if(0!=SDL_RenderCopy(carteSDL->renderer , texture , NULL  , &rect )){
                     printf("Ok mais erreur de printage\n" );
                 }
