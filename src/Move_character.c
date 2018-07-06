@@ -5,6 +5,7 @@
 #include "../include/Afficher_carte.h"
 #include "../include/enregistrer_carte.h"
 #include "../include/Generateur_carte_alea.h"
+#include "../include/monster.h"
 #define UP -1
 #define DOWN +1
 
@@ -44,7 +45,7 @@ Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     return carte;
 }
 Carte* floorUp(Carte* carte , CarteSDL *carteSDL){
-    carte= loadFloor(carte , UP , carteSDL);
+    carte= loadFloor(carte  , carteSDL , UP);
     return carte;
 }
 void annulerMouvement(Carte* carte , int event){
@@ -110,7 +111,7 @@ void setShowTile(Carte *carte , int set){
         carte->terrain[carte->posPerso+2-carte->largeur].voile=set;
     }
 }
-int eventPerso(Carte *carte , int event){
+int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
     int out=1;
     if(carte->terrain[carte->posPerso].type==MUR||carte->terrain[carte->posPerso].type==MUR_SALLE||carte->terrain[carte->posPerso].type==MUR_CHEMIN){
         out=0;
@@ -118,12 +119,12 @@ int eventPerso(Carte *carte , int event){
     }
     if(carte->terrain[carte->posPerso].tresor!=-1&&carte->terrain[carte->posPerso].tresor!=-2){
         out=1;
-        printf("Voila l'objet sur leque tu te trouve : %d\n",carte->terrain[carte->posPerso].tresor);
         carte->terrain[carte->posPerso].objet=carte->terrain[carte->posPerso].tresor;
         carte->terrain[carte->posPerso].tresor=-2;
     }
-    else if(carte->terrain[carte->posPerso].tresor==-2){
-        carte->terrain[carte->posPerso].objet=-1;
+    else if(carte->terrain[carte->posPerso].tresor==-2&&carte->terrain[carte->posPerso].objet!=-1){
+        carte->terrain[carte->posPerso].objet=takeObject(carteSDL , carte , carte->terrain[carte->posPerso].objet , carte->posPerso);
+        out=1;
     }
     setShowTile(carte , SHOW);
     return out;
@@ -143,28 +144,28 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             if(!event.key.repeat){
                                 setShowTile(carte , VISITED);
                                 carte->posPerso-=carte->largeur;
-                                rafraichissement=eventPerso(carte , HAUT);
+                                rafraichissement=eventPerso(carteSDL , carte , HAUT);
                             }
                             break;
                         case SDLK_DOWN :
                             if(!event.key.repeat){
                                 setShowTile(carte , VISITED);
                                 carte->posPerso+=carte->largeur;
-                                rafraichissement=eventPerso(carte , BAS);
+                                rafraichissement=eventPerso(carteSDL , carte , BAS);
                             }
                             break;
                         case SDLK_RIGHT :
                             if(!event.key.repeat){
                                 setShowTile(carte , VISITED);
                                 carte->posPerso++;
-                                rafraichissement=eventPerso(carte , DROITE);
+                                rafraichissement=eventPerso(carteSDL , carte , DROITE);
                             }
                             break;
                         case SDLK_LEFT :
                             if(!event.key.repeat){
                                 setShowTile(carte , VISITED);
                                 carte->posPerso--;
-                                rafraichissement=eventPerso(carte , GAUCHE);
+                                rafraichissement=eventPerso(carteSDL , carte , GAUCHE);
                             }
                             break;
                         case SDLK_s :

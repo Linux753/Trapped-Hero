@@ -17,7 +17,6 @@ int main()
     srand(time(NULL));
     dimension=rand_a_b(100 , 120);
     carteSDL=initialiserCarteSDL();
-
     creerListe(carteSDL);
     printf("Passé ici\n" );
     if(carteSDL==NULL){
@@ -37,7 +36,6 @@ int main()
         }
         else if(out==LOAD){
             carte=loadGame(choice , carteSDL);
-            creerListe(carte  , carteSDL);
         }
         moveCharacter(carte , carteSDL );
         enregistrerCarte(carte);

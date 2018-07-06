@@ -29,7 +29,7 @@
 
 typedef enum Type Type;
 enum Type{
-    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor , Fleche
+    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor , Fleche , Massue
 };
 typedef enum TypeAttaque TypeAttaque;
 enum TypeAttaque{
@@ -41,7 +41,7 @@ struct Objet{
     Type type;
     TypeAttaque typeAttaque;
     float poids;
-    int resistance;//D'une armure ou alors le coefficient de protection du bouclier (le plus souvent de 1 à 10%)
+    int resistance;//D'une armure ou d'un bouclier
     int resistanceMagique;
     int attaque;
     int attaqueMax;
@@ -59,7 +59,36 @@ struct Objet{
     int numMin;
     int numMax;
     int resistanceOriginale;
+    int protection;//D'une armure ou alors le coefficient de protection du bouclier (le plus souvent de 1 à 10%)
+    SDL_Texture *texture;
+};
+typedef struct Personnage Personnage;
+struct Personnage{
+    //Inventaire
+    int *inventaireArme;
+    int *inventaireBaton;
+    int *inventaireArmure;
+    int *inventairePotion;
+    int *inventaireParchemin;
+    int nbObjets;
+    int masseObjet;
+    //Caracteristique
+    int vie;
+    int force;
+    int habilete;
+    int precision;
+    int magie;
+    int agilite;
+    //Objets
+    Objet armure;
+    int armureNum;
+    Objet arme;
+    int attaque;
+    int attaqueMax;
     int protection;
+    int poidsMax;
+    Objet argent;
+    //Autre
     SDL_Texture *texture;
 };
 typedef struct Terrain Terrain;
@@ -112,6 +141,7 @@ struct CarteSDL{
     SDL_Texture *treasor;
     SDL_Texture *treasorOpen;
     SDL_Texture *personnage;
+    Personnage *perso;
 };
 typedef struct Button Button;
 struct Button{
@@ -120,23 +150,6 @@ struct Button{
     SDL_Texture *text;
     int select;
 };
-typedef struct Personnage Personnage;
-struct Personnage{
-    int vie;
-    int *inventaire;
-    int force;
-    int masseObjet;
-    int armureNum;
-    Objet armure;
-    Objet arme;
-    int attaque;
-    int attaqueMax;
-    int habilete;
-    int precision;
-    int magie;
-    int agilite;
-    int protection;
-    Objet argent;
-};
+
 
 #endif // STRUCTURE_H_INCLUDED

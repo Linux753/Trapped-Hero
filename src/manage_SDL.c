@@ -47,12 +47,14 @@ void quitterSDL(CarteSDL *carteSDL){
         printf("Destruction texture nb %d\n" , i);
         }
     }
+    free(carteSDL->chemin);
     for(i=0; i<3; i++){
         if(carteSDL->mur[i]!=NULL){
             SDL_DestroyTexture(carteSDL->mur[i]);
             printf("Destruction texture nb %d\n" , i);
         }
     }
+    free(carteSDL->mur);
     if(carteSDL->porte!=NULL){
         SDL_DestroyTexture(carteSDL->porte);
     }
@@ -80,6 +82,27 @@ void quitterSDL(CarteSDL *carteSDL){
     if(carteSDL->window!=NULL){
         SDL_DestroyWindow(carteSDL->window);
     }
+    if(carteSDL->perso!=NULL){
+      if(carteSDL->perso->inventaireArme!=NULL){
+        free(carteSDL->perso->inventaireArme);
+      }
+      if(carteSDL->perso->inventaireBaton!=NULL){
+        free(carteSDL->perso->inventaireBaton);
+      }
+      if(carteSDL->perso->inventaireArmure!=NULL){
+        free(carteSDL->perso->inventaireArmure);
+      }
+      if(carteSDL->perso->inventairePotion!=NULL){
+        free(carteSDL->perso->inventairePotion);
+      }
+      if(carteSDL->perso->inventaireParchemin!=NULL){
+        free(carteSDL->perso->inventaireParchemin);
+      }
+      if(carteSDL->perso->texture!=NULL){
+        SDL_DestroyTexture(carteSDL->perso->texture);
+      }
+      free(carteSDL->perso);
+    }
     free(carteSDL->listeObjet);
     TTF_Quit();
     SDL_Quit();
@@ -99,7 +122,7 @@ CarteSDL *initialiserCarteSDL(){
         fprintf(stderr , "Error SDL finish the print of the map");
         return NULL;
     }
-    
+    initialiserPersonnage(carteSDL);
     return carteSDL;
 }
 
