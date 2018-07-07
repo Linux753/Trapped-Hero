@@ -3,4 +3,5 @@
 #include "structure.h"
     int initialiserPersonnage(CarteSDL* carteSDL);
     int takeObject(CarteSDL* carteSDL , Carte* carte, int objet , int position);
+    void afficherInventaire(CarteSDL *carteSDL);
 #endif

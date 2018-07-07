@@ -2,18 +2,27 @@
 #include <stdio.h>
 #include "../include/structure.h"
 
+void afficherInventaire(CarteSDL *carteSDL){
+    int i=0;
+    printf("Inventaire\n");
+    printf("Inventaire Arme :\n");
+    while(carteSDL->perso->inventaireArme[i]!=0){
+        printf("%d - %s : %s\n" , i+1 , carteSDL->listeObjet[carteSDL->perso->inventaireArme[i]].nom , carteSDL->listeObjet[carteSDL->perso->inventaireArme[i]].description);
+        i++;
+    }
+    printf("Voila c'est tout pour l'instant\n");
+}
 int takeObject(CarteSDL* carteSDL , Carte* carte, int objet  , int position){//Return the object on the floor or noting (-1)
-    printf("ICI je suis\n");
     Type type;
     int i=0;
-    type=carteSDL->listeObjet[i].type;
+    type=carteSDL->listeObjet[objet].type;
     if(carteSDL->perso->masseObjet+carteSDL->listeObjet[objet].poids<=carteSDL->perso->poidsMax&&carteSDL->perso->nbObjets<50){
-      printf("ICI je suis encore\n");
       if(type==Epe||type==Arc||type==Massue||type==Fleche){
           while(carteSDL->perso->inventaireArme[i]!=0){
               i++;
           }
           carteSDL->perso->inventaireArme[i]=objet;
+          printf("Ici on a pris une arme\n");
       }
       if(type==Baton||type==BatonMagique){
           while(carteSDL->perso->inventaireBaton[i]!=0){

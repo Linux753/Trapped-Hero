@@ -124,6 +124,7 @@ int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
     }
     else if(carte->terrain[carte->posPerso].tresor==-2&&carte->terrain[carte->posPerso].objet!=-1){
         carte->terrain[carte->posPerso].objet=takeObject(carteSDL , carte , carte->terrain[carte->posPerso].objet , carte->posPerso);
+        printf("Ici on a pris les objets\n" );
         out=1;
     }
     setShowTile(carte , SHOW);
@@ -182,6 +183,9 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             zoom--;
                             rafraichissement=1;
                             position=99999;
+                            break;
+                        case SDLK_i :
+                            afficherInventaire(carteSDL);
                             break;
                         case SDLK_q :
                             continuer=0;

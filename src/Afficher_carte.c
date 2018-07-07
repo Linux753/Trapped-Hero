@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "../include/structure.h"
 #include "../include/manage_SDL.h"
+
+
 int chargerTileOrSprite(CarteSDL *carteSDL , SDL_Texture *image ,
     SDL_Texture **sprite , int x , int y , int sizeTileW , int sizeTileH){
     SDL_Rect srcRect;
