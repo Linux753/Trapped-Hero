@@ -9,6 +9,9 @@
 #include "../include/Move_character.h"
 #include "../include/menu.h"
 #include "../include/enregistrer_carte.h"
+#include "../include/listeObjet.h"
+#include "../include/Generateur_object.h"
+
 int main()
 {
     CarteSDL *carteSDL=NULL;

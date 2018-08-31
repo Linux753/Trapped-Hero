@@ -29,11 +29,34 @@
 
 typedef enum Type Type;
 enum Type{
-    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique , Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor , Fleche , Massue
+    Rien ,Or , Epe , Armure , Arc , Baton , BatonMagique, Parchemin , Potion , Porte , EscalierBas , EscalierHaut , Tresor , Fleche , Massue , Bouclier
 };
 typedef enum TypeAttaque TypeAttaque;
 enum TypeAttaque{
     Nulle , Arcane , Tranchant , Froid , Feu , Perforant , Contendant
+};
+typedef struct Inventaire Inventaire;
+struct Inventaire{
+    SDL_Texture *textureFond;
+    SDL_Texture *textureCadre;
+    SDL_Texture *texture;
+    SDL_Texture *textureCadreDroit;
+    SDL_Texture *textureCadreGauche;
+    //SDL_Texture *background;
+    SDL_Texture *selectArme;
+    SDL_Texture *selectArmure;
+    SDL_Texture *selectParchemin;
+    SDL_Texture *selectBaton;
+    SDL_Texture *selectPotion;
+    SDL_Rect affichage;
+    SDL_Rect rectArme;//Fait
+    SDL_Rect rectArmure;
+    SDL_Rect rectParchemin;//Fait
+    SDL_Rect rectBaton;
+    SDL_Rect rectPotion;//Fait
+    SDL_Rect rectObjet[40];
+    int select;
+    int affiche;
 };
 typedef struct Objet Objet;
 struct Objet{
@@ -125,6 +148,13 @@ struct Carte{
     int nbFloor;
     char path[50];
 };
+typedef struct ListeChar ListeChar;
+struct ListeChar{
+    char* texte;
+    int w;
+    int h;
+    ListeChar* suivant;
+};
 typedef struct CarteSDL CarteSDL;
 struct CarteSDL{
     int numMax;
@@ -142,6 +172,7 @@ struct CarteSDL{
     SDL_Texture *treasorOpen;
     SDL_Texture *personnage;
     Personnage *perso;
+    Inventaire *persoInventaire;
 };
 typedef struct Button Button;
 struct Button{

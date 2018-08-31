@@ -330,7 +330,7 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
         rect.w=taille;
         rect.h=taille;
         //Loading tile
-        if(carte->terrain[i].voile==HIDDEN){
+        if(carte->terrain[i].voile==HIDDEN||i>=carte->largeur*carte->hauteur||i<0){
             SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
         }
         else{
@@ -419,10 +419,6 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
             i++;
             compteurW++;
         }
-        if(i>=carte->largeur*carte->hauteur){
-            printf("Erreur debordement\n");
-        }
     }
-    SDL_RenderPresent(carteSDL->renderer);
     return position;
 }

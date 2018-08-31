@@ -6,9 +6,10 @@
 #include "../include/structure.h"
 #include "../include/Afficher_carte.h"
 
+
 int ecrireTextSDL(CarteSDL* carteSDL , char* file,char* text ,int size ,  SDL_Texture** texture , SDL_Color *colorFg , SDL_Color *colorBg){
     SDL_Surface *surface=NULL;
-    TTF_Font*font=NULL;
+    TTF_Font* font=NULL;
     int out=0;
     font=TTF_OpenFont(file , size);
     if(font==NULL){

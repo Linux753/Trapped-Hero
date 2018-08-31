@@ -18,7 +18,6 @@ int GenererObjetCoffre(CarteSDL *carteSDL){
 }
 void generateScale(Carte *carte){
     int positionPerso=0;
-    carte->terrain[carte->position[carte->compteur]].objet=malloc(sizeof(Objet));
     carte->terrain[carte->position[carte->compteur]].objet=0;
     carte->compteur--;
     positionPerso=carte->position[carte->compteur];

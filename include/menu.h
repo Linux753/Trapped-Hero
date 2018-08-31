@@ -13,4 +13,6 @@ int redessinerMenu(CarteSDL *carteSDL ,
                     Button *play , Button *quit , Button *load);
 int dessinerMenu(CarteSDL* carteSDL , SDL_Texture **menu , SDL_Rect *rectMenu ,
                 Button *play , Button *quit , Button *load);
+int ecrireTextSDL(CarteSDL* carteSDL , char* file,char* text ,int size ,  SDL_Texture** texture , SDL_Color *colorFg , SDL_Color *colorBg);
+
 #endif // MENU_H_INCLUDED

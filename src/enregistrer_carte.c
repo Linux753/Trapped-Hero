@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "../include/structure.h"
 #include "../include/enregistrer_carte.h"
+#include "../include/Generateur_carte_alea.h"
+#include "../include/Generateur_object.h"
 
 void quitterEnregistrerCarte(FILE *file){
     if(file!=NULL){
@@ -51,12 +53,12 @@ int initGame(Carte *carte){
 }
 int lireCarte(Carte *carte ,int choice , CarteSDL *carteSDL){
     FILE *file=NULL;
-    int i=0 , vide=0;
+    int i=0 , vide=0 , valeur=0;
     file=fopen( carte->path ,"r");
     if(file==NULL){
         fprintf(stderr , "Erreur ouverture fichierICI\n");
         quitterLireCarte(carte , file);
-        return NULL;
+        return -1;
     }
     if(EOF==fscanf(file , "vide[%d]" , &vide )){
         quitterGenerateur(carte);
@@ -105,7 +107,8 @@ int lireCarte(Carte *carte ,int choice , CarteSDL *carteSDL){
         }
         fscanf(file , "\nterrain");
         for(i=0; i<carte->largeur*carte->hauteur; i++){
-            fscanf(file , "[[%d][%d][%d][%d][%d]]" , &carte->terrain[i].type , &carte->terrain[i].numeroSalle , &carte->terrain[i].objet , &carte->terrain[i].tresor, &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
+            fscanf(file , "[[%d][%d][%d][%d][%c][%c]]" , &valeur , &carte->terrain[i].numeroSalle , &carte->terrain[i].objet , &carte->terrain[i].tresor, &carte->terrain[i].numeroTile , &carte->terrain[i].voile);
+            carte->terrain[i].type=valeur;
         }
     }
     quitterLireCarte(NULL , file);
@@ -169,7 +172,7 @@ int enregistrerCarte(Carte *carte){
     }
     fprintf(file , "\nterrain");
     for(i=0; i<carte->largeur*carte->hauteur; i++){
-        fprintf(file , "[[%d][%d][%d][%d][%d]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle  , carte->terrain[i].objet  , carte->terrain[i].tresor, carte->terrain[i].numeroTile , carte->terrain[i].voile);
+        fprintf(file , "[[%d][%d][%d][%d][%c][%c]]" , carte->terrain[i].type , carte->terrain[i].numeroSalle  , carte->terrain[i].objet  , carte->terrain[i].tresor, carte->terrain[i].numeroTile , carte->terrain[i].voile);
     }
     quitterEnregistrerCarte(file);
     return 0;

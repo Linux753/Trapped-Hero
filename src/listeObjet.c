@@ -151,6 +151,8 @@ int creerListe(CarteSDL *carteSDL){
             case 13:
                 nouveau->type=Fleche;
                 break;
+            case 14:
+                nouveau->type=Bouclier;
         }
         switch (typeAttaque) {
             case 1:
@@ -179,8 +181,8 @@ int creerListe(CarteSDL *carteSDL){
         nouveau->resistance=resistance;
         nouveau->resistanceOriginale=resistance;
         nouveau->resistanceMagique=resistanceMagique;
-        sprintf(nouveau->nom , nom);
-        sprintf(nouveau->description , description);
+        sprintf(nouveau->nom ,"%s", nom);
+        sprintf(nouveau->description ,"%s", description);
         nouveau->attaque=attaque;
         nouveau->attaqueMax=attaqueMax;
         nouveau->caracteristiqueCritique=caracteristiqueCritique;

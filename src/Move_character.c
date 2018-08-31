@@ -5,7 +5,9 @@
 #include "../include/Afficher_carte.h"
 #include "../include/enregistrer_carte.h"
 #include "../include/Generateur_carte_alea.h"
-#include "../include/monster.h"
+#include "../include/Generateur_object.h"
+#include "../include/inventaire.h"
+#include "../include/manage_SDL.h"
 #define UP -1
 #define DOWN +1
 
@@ -26,7 +28,7 @@ Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     int floor=0 , nbFloor=0 , numGame=0;
     char pathGame[50];
     if(carte->nbFloor>carte->floor){
-        carte=loadFloor(carte , DOWN , carteSDL);
+        carte=loadFloor(carte ,carteSDL, DOWN );
         return carte;
     }
     enregistrerCarte(carte);
@@ -132,7 +134,7 @@ int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
 }
 int moveCharacter(Carte *carte,CarteSDL* carteSDL){
     SDL_Event event;
-    int continuer=1 , zoom=75, rafraichissement=0 , position=99999;
+    int continuer=1 , zoom=75, rafraichissement=1 , position=99999 , takeScreen=0;
 
     setShowTile(carte , SHOW);
     position=afficherCarteZoom(carte , carteSDL , position , zoom , event.key.keysym.sym);
@@ -185,7 +187,8 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             position=99999;
                             break;
                         case SDLK_i :
-                            afficherInventaire(carteSDL);
+                            takeScreen=1;
+                            rafraichissement=1;
                             break;
                         case SDLK_q :
                             continuer=0;
@@ -220,6 +223,15 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             break;
                     }
                     break;
+                case SDL_KEYUP :
+                    switch(event.key.keysym.sym){
+                        case SDLK_i :
+                            takeScreen=0;
+                            afficherInventaire(carteSDL);
+                            rafraichissement=1;
+                            break;
+                    }
+                    break;
                 case SDL_QUIT :
                     continuer = 0;
                     break;
@@ -227,8 +239,13 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
             if(rafraichissement){//Permet de rafraichir l'écran seulement lorsque c'est necessaire
                 rafraichissement=0;
                 position=afficherCarteZoom(carte , carteSDL , position , zoom , event.key.keysym.sym );
+                if(takeScreen){
+                    carteSDL->persoInventaire->textureFond=copyRenderToTexture(carteSDL);
+                }
+                SDL_RenderPresent(carteSDL->renderer);
             }
-        }else{
+        }
+        else{
             SDL_Delay(50);
         }
     }
