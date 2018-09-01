@@ -519,7 +519,7 @@ void calculerPositionAbsolueBouton(SDL_Rect* rectRelatif , SDL_Rect* rect1 , SDL
     *rect2=setRect(rect2->w, rect2->h, rectRelatif->x+rect2->x, rectRelatif->y+rect2->y);
     *rect3=setRect(rect3->w, rect3->h, rectRelatif->x+rect3->x, rectRelatif->y+rect3->y);
 }
-void quitWindowStatsObject(SDL_Texture* texture1 , SDL_Texture* texture2 , SDL_Texture* texture3 , SDL_Texture* texture4 , SDL_Texture* texture5 , SDL_Texture* texture6 , SDL_Texture* texture7){
+void quitWindowStatsObject(SDL_Texture* texture1 , SDL_Texture* texture2 , SDL_Texture* texture3 , SDL_Texture* texture4 , SDL_Texture* texture5 , SDL_Texture* texture6 , SDL_Texture* texture7 , SDL_Texture* texture8 , SDL_Texture* texture9 , SDL_Texture* texture10){
     if(texture1!=NULL){
         SDL_DestroyTexture(texture1);
     }
@@ -541,30 +541,58 @@ void quitWindowStatsObject(SDL_Texture* texture1 , SDL_Texture* texture2 , SDL_T
     if(texture7!=NULL){
         SDL_DestroyTexture(texture7);
     }
+    if(texture8!=NULL){
+        SDL_DestroyTexture(texture8);
+    }
+    if(texture9!=NULL){
+        SDL_DestroyTexture(texture8);
+    }
+    if(texture10!=NULL){
+        SDL_DestroyTexture(texture8);
+    }
 }
 int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , char* choix1 , char* choix2 , char* choix3 ){
-    SDL_Texture *texture=NULL , *bouton1=NULL , *bouton2=NULL , *bouton3=NULL , *textureTexte=NULL , *textureStats=NULL ,  *textureTitre=NULL;
-    SDL_Rect rectTexture , rectBouton1 , rectBouton2 , rectBouton3 , rectTextureTexte , rectStats , rectTitre , rectIcone;
+    SDL_Texture *texture=NULL , *bouton1=NULL , *bouton2=NULL , *bouton3=NULL , *textureTexte=NULL , *textureStats=NULL ,  *textureTitre=NULL , *textureCorner=NULL , *textureBorder=NULL , *textureTop=NULL;
+    SDL_Rect rectTexture , rectBouton1 , rectBouton2 , rectBouton3 , rectTextureTexte , rectStats , rectTitre , rectIcone , rectCorner , rectBorder , rectTop , rectFond;
     SDL_Event event;
     SDL_Color colorFg={0 , 0 , 0 , 255};
     SDL_Point mousePos;
     int continuer=1 , rafraichissement=1 , w=0 , h=0 , select=0;
+    loadIMG(carteSDL, "image/wObjectCorner.png", &textureCorner);
+    if(textureCorner==NULL){
+        fprintf(stderr, "Erreur loadIMG()\n");
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
+        return -1;
+    }
+    rectCorner=setRect(6, 6, 0, 0);
+    loadIMG(carteSDL, "image/wObjectBorder.png", &textureBorder);
+    if(textureBorder==NULL){
+        fprintf(stderr, "Erreur loadIMG()\n");
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
+        return -1;
+    }
+    loadIMG(carteSDL, "image/wObjectTop.png", &textureTop);
+    if(textureTop==NULL){
+        fprintf(stderr, "Erreur loadIMG()\n");
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
+        return -1;
+    }
     bouton1=createWindowStatsButton(carteSDL, choix1, &rectBouton1);
     if(bouton1==NULL){
         fprintf(stderr, "Erreur createWindowStatsButton()\n");
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     bouton2=createWindowStatsButton(carteSDL, choix2, &rectBouton2);
     if(bouton2==NULL){
         fprintf(stderr, "Erreur createWindowStatsButton()\n");
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     bouton3=createWindowStatsButton(carteSDL, choix3, &rectBouton3);
     if(bouton3==NULL){
         fprintf(stderr, "Erreur createWindowStatsButton()\n");
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     SDL_GetWindowSize(carteSDL->window, &w, &h);
@@ -572,7 +600,7 @@ int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , c
     textureTitre=ecrireSDLSolid(carteSDL, "police/pixel4.ttf", carteSDL->listeObjet[listeSelect[objetSelect]].nom, 80, colorFg);
     if(textureTitre==NULL){
         fprintf(stderr, "Erreur ecrireSDLSolid()\n");
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     SDL_QueryTexture(textureTitre, NULL, NULL, &rectTitre.w,&rectTitre.h);
@@ -582,10 +610,10 @@ int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , c
 
     rectIcone.h=64;
     rectIcone=setRect(64, 64, 10, 10+((rectTitre.h/2)-(rectIcone.h/2)));
-    rectTitre.x=rectIcone.w+rectIcone.x+10;
+    rectTitre.x=rectIcone.w+rectIcone.x+10+rectCorner.w;
     rectTitre.y=10;
     rectTexture.w=rectTitre.x+rectTitre.w+30;
-    rectBouton1.x=10;
+    rectBouton1.x=10+rectCorner.w;
     rectBouton2.x=rectBouton1.x+rectBouton1.w+10;
     rectBouton3.x=rectBouton2.x+rectBouton2.w+10;
     if(rectBouton3.x+rectBouton3.w+5>rectTexture.w){
@@ -597,14 +625,15 @@ int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , c
     textureTexte=createStatsText(carteSDL, listeSelect[objetSelect], rectTexture.w);
     SDL_QueryTexture(textureTexte, NULL, NULL, &(rectTextureTexte.w),&(rectTextureTexte.h));
     rectTexture.h=rectBouton1.h+rectTextureTexte.h+rectStats.h+rectTitre.h+50;
-
+    rectTexture.h=rectTexture.h+(2*rectCorner.h);
+    rectTexture.w=rectTexture.w+(2*rectCorner.w);
     rectTextureTexte.y=rectTitre.h+20;
-    rectTextureTexte.x=0;
+    rectTextureTexte.x=rectCorner.w;
 
-    rectIcone.x=(rectTexture.w-(rectIcone.w+rectTitre.w+10))/2;
+    rectIcone.x=((rectTexture.w-(rectIcone.w+rectTitre.w+10))/2)+rectCorner.w;
     rectTitre.x=rectIcone.w+rectIcone.x+10;
     rectStats=setRect(rectStats.w,rectStats.h, (rectTexture.w/2)-(rectStats.w/2), rectTextureTexte.h+rectTitre.h+30);
-    rectBouton1.x=(rectTexture.w-(rectBouton1.w+rectBouton2.w+rectBouton3.w+(2*10)))/2;
+    rectBouton1.x=((rectTexture.w-(rectBouton1.w+rectBouton2.w+rectBouton3.w+(2*10)))/2)+rectCorner.w;
     rectBouton2.x=rectBouton1.x+rectBouton1.w+10;
     rectBouton3.x=rectBouton2.x+rectBouton2.w+10;
     rectBouton1.y=rectStats.h+rectTextureTexte.h+rectTitre.h+40;
@@ -616,17 +645,38 @@ int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , c
     texture=SDL_CreateTexture(carteSDL->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, rectTexture.w, rectTexture.h);
     if(texture==NULL){
         fprintf(stderr, "Erreur SDL_CreateTexture : %s\n", SDL_GetError());
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     if(0!=SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND)){
         fprintf(stderr, "Erreur SDL_SetTextureBlendMode() : %s\n", SDL_GetError() );
-        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+        quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
         return -1;
     }
     SDL_SetRenderTarget(carteSDL->renderer, texture);
-    SDL_SetRenderDrawColor(carteSDL->renderer, 170, 170, 170, 255);
+    SDL_SetRenderDrawColor(carteSDL->renderer, 170, 170, 170, 0);
     SDL_RenderClear(carteSDL->renderer);
+    SDL_SetRenderDrawColor(carteSDL->renderer, 0, 0, 0, 255);
+    SDL_RenderDrawRect(carteSDL->renderer, &rectTexture);
+    rectCorner=setRect(6, 6, 0, 0);
+    SDL_RenderCopy(carteSDL->renderer, textureCorner, NULL, &rectCorner);
+    rectCorner.y=rectTexture.h-rectCorner.h;
+    SDL_RenderCopy(carteSDL->renderer, textureCorner, NULL, &rectCorner);
+    rectCorner.x=rectTexture.w-rectCorner.w;
+    SDL_RenderCopy(carteSDL->renderer, textureCorner, NULL, &rectCorner);
+    rectCorner.y=0;
+    SDL_RenderCopy(carteSDL->renderer, textureCorner, NULL, &rectCorner);
+    rectBorder=setRect(3, rectTexture.h-(2*rectCorner.h), 3 , rectCorner.h);
+    SDL_RenderCopy(carteSDL->renderer, textureBorder, NULL, &rectBorder);
+    rectBorder.x=rectTexture.w-rectCorner.w;
+    SDL_RenderCopy(carteSDL->renderer, textureBorder, NULL, &rectBorder);
+    rectTop=setRect(rectTexture.w-(2*rectCorner.w), 3, rectCorner.w, 3);
+    SDL_RenderCopy(carteSDL->renderer, textureTop, NULL, &rectTop);
+    rectTop.y=rectTexture.h-rectCorner.h;
+    SDL_RenderCopy(carteSDL->renderer, textureTop, NULL, &rectTop);
+    rectFond=setRect(rectTexture.w-(2*rectCorner.w), rectTexture.h-(2*rectCorner.h), rectCorner.w,rectCorner.h);
+    SDL_SetRenderDrawColor(carteSDL->renderer, 170, 170, 170, 255);
+    SDL_RenderFillRect(carteSDL->renderer, &rectFond);
     SDL_RenderCopy(carteSDL->renderer, textureTitre, NULL, &rectTitre);
     SDL_RenderCopy(carteSDL->renderer, carteSDL->listeObjet[listeSelect[objetSelect]].texture, NULL, &rectIcone);
     SDL_RenderCopy(carteSDL->renderer, bouton1, NULL, &rectBouton1);
@@ -687,7 +737,7 @@ int windowStatsObject(CarteSDL* carteSDL ,int objetSelect , int* listeSelect , c
             rafraichissement=0;
         }
     }
-    quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre);
+    quitWindowStatsObject(texture, bouton1, bouton2, bouton3 , textureTexte , textureStats , textureTitre , textureCorner , textureBorder , textureTop);
     return select;
 }
 void afficherInventaire(CarteSDL *carteSDL){

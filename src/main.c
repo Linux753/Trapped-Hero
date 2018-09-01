@@ -41,8 +41,11 @@ int main()
             carte=loadGame(choice , carteSDL);
         }
         moveCharacter(carte , carteSDL );
+        printf("Quitter move character\n" );
         enregistrerCarte(carte);
+        printf("On a enregistré la carte\n");
         quitterJeu(carte , carteSDL);
+        printf("On a quitté le jeu\n");
     }
     else{
         printf("\nErreur\n");
