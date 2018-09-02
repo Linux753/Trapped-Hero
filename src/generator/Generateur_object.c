@@ -35,6 +35,7 @@ void generateTreasor(CarteSDL *carteSDL , Carte* carte){
 void generateObject(Carte *carte , CarteSDL *carteSDL){
     int i=0;
     Objet *nouveau;
+    carteSDL->numMax=0;
     generateScale(carte);
     for(i=0; i<carteSDL->nbObjet; i++){
         nouveau=&(carteSDL->listeObjet[i]);

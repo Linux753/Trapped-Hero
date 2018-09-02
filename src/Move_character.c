@@ -211,6 +211,7 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                         case SDLK_e :
                                 if(carte->terrain[carte->posPerso].objet==0){
                                     carte=floorDown(carte , carteSDL);
+                                    setShowTile(carte , VISITED);
                                     rafraichissement=1;
                                     position=99999;
                                 }
