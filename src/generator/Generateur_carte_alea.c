@@ -46,7 +46,6 @@ void initialiserCarte(Carte *carte){
             carte->terrain[i].numeroTile=0;
         }
         carte->terrain[i].voile=HIDDEN;
-        carte->terrain[i].type=Rien;
         carte->terrain[i].objet=-1;
         carte->terrain[i].tresor=-1;
     }
