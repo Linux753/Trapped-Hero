@@ -113,6 +113,61 @@ void setShowTile(Carte *carte , int set){
         carte->terrain[carte->posPerso+2-carte->largeur].voile=set;
     }
 }
+int addLog(CarteSDL* carteSDL , char* texte){
+    SDL_Surface* surface=NULL;
+    SDL_Texture* texture=NULL , *textureProvisoire=NULL;
+    SDL_Color colorfg={255 , 255 , 255 , 255};
+    SDL_Rect dstRect , rectTexture;
+    char *ligne=NULL;
+    int continuer=1 , num=0;
+    textureProvisoire=SDL_CreateTexture(carteSDL->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, carteSDL->rectLog.w, carteSDL->rectLog.h);
+    if(textureProvisoire==NULL){
+        fprintf(stderr, "Erreur SDL_CreateTexture() %s\n", SDL_GetError());
+        return -1;
+    }
+    if(0!=SDL_SetTextureBlendMode(textureProvisoire,SDL_BLENDMODE_BLEND)){
+        fprintf(stderr, "Erreur SDL_SetTextureBlendMode : %s\n", SDL_GetError());
+        return -1;
+    }
+    while(continuer){
+        ligne=createTextWithSize(carteSDL, texte, carteSDL->rectLog.w, &num, &rectTexture.w, &rectTexture.h);
+        if(ligne==NULL){
+            fprintf(stderr, "Erreur createTextWithSize()\n");
+            return -1;
+        }
+        if(num==-1){
+            continuer=0;
+        }
+        rectTexture.x=0;
+        rectTexture.y=carteSDL->rectLog.h-rectTexture.h;
+        surface=TTF_RenderUTF8_Solid(carteSDL->font , ligne  , colorFg );
+        if(surface==NULL){
+            fprintf(stderr, "Erreur TTF_RenderUTF8_Solid(): %s\n",TTF_GetError() );
+            return -1;
+        }
+        texture=SDL_CreateTextureFromSurface(carteSDL->renderer, surface);
+        if(texture==NULL){
+            fprintf(stderr, "Erreur SDL_CreateTextureFromSurface() : %s\n",SDL_GetError() );
+            return -1;
+        }
+        dstRect=setRect(carteSDL->rectLog.w, carteSDL->rectLog.h, 0, -rectTexture.h)
+        SDL_SetRenderTarget(carteSDL->renderer, textureProvisoire);
+        SDL_SetRenderDrawColor(carteSDL->renderer, 0, 0, 0, 0);
+        SDL_RenderClear(carteSDL->renderer);
+        if(0!=SDL_RenderCopy(carteSDL->renderer, carteSDL->log, NULL, &dstRect)){
+            fprintf(stderr, "Erreur SDL_RenderCopy() : %s\n",SDL_GetError() );
+        }
+        SDL_RenderCopy(carteSDL->renderer, texture, NULL, &rectTexture);
+        SDL_SetRenderTarget(carteSDL->renderer, NULL);
+        if(ligne!=NULL){
+            free(ligne);
+        }
+        if(texture!=NULL){
+            SDL_DestroyTexture(texture);
+        }
+    }
+
+}
 int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
     int out=1;
     if(carte->terrain[carte->posPerso].type==MUR||carte->terrain[carte->posPerso].type==MUR_SALLE||carte->terrain[carte->posPerso].type==MUR_CHEMIN){
@@ -243,6 +298,7 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                 if(takeScreen){
                     carteSDL->persoInventaire->textureFond=copyRenderToTexture(carteSDL);
                 }
+                SDL_RenderCopy(carteSDL->renderer, carteSDL->log, NULL, &(carteSDL->rectLog));
                 SDL_RenderPresent(carteSDL->renderer);
             }
         }

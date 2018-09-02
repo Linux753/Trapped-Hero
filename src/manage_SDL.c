@@ -185,12 +185,39 @@ void quitterSDL(CarteSDL *carteSDL){
         }
         free(carteSDL->persoInventaire);
     }
+    if(carteSDL->font!=NULL){
+        TTF_CloseFont(carteSDL->font);
+    }
+    if(carteSDL->log!=NULL){
+        SDL_DestroyTexture(carteSDL->log);
+    }
     free(carteSDL->listeObjet);
     TTF_Quit();
     SDL_Quit();
     free(carteSDL);
 }
-
+int initialiserLog(CarteSDL *carteSDL){
+    carteSDL->log=SDL_CreateTexture(carteSDL->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 400 , 200);
+    if(carteSDL->log==NULL){
+        fprintf(stderr, "Erreur SDL_CreateTexture() : %s\n" , SDL_GetError() );
+        return -1;
+    }
+    if(0!=SDL_SetTextureBlendMode(carteSDL->log, SDL_BLENDMODE_BLEND)){
+        fprintf(stderr, "Erreur SDL_SetTextureBlendMode() : %s\n" , SDL_GetError() );
+        return -1;
+    }
+    carteSDL->font=TTF_OpenFont("police/pixel4.ttf", 30);
+    if(carteSDL->font==NULL){
+        fprintf(stderr, "Erreur TTF_OpenFont() : %s\n" , TTF_GetError() );
+        return -1;
+    }
+    SDL_SetRenderTarget(carteSDL->renderer, carteSDL->log);
+    carteSDL->rectLog=setRect(400, 200, 0, 0);
+    SDL_SetRenderDrawColor(carteSDL->renderer, 255, 255, 255, 255);
+    SDL_RenderClear(carteSDL->renderer);
+    SDL_SetRenderTarget(carteSDL->renderer, NULL);
+    return 0;
+}
 CarteSDL *initialiserCarteSDL(){
     CarteSDL *carteSDL=malloc(sizeof(CarteSDL));
     if(0!=InitialiserSDL(carteSDL)){
@@ -206,6 +233,11 @@ CarteSDL *initialiserCarteSDL(){
     }
     initialiserPersonnage(carteSDL);
     initialiserPersoInventaire(carteSDL);
+    if(0!=initialiserLog(carteSDL)){
+        quitterSDL(carteSDL);
+        fprintf(stderr , "Error SDL finish the print of the map");
+        return NULL;
+    }
     return carteSDL;
 }
 

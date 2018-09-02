@@ -34,20 +34,20 @@ SDL_Texture *ecrireSDLSolid(CarteSDL *carteSDL , char* file , char* texte ,int s
     font=TTF_OpenFont(file , size);
     if(font==NULL){
         fprintf(stderr , "Erreur TTF_OpenFont : %s" , TTF_GetError());
-        return NULL;
         quitEcrireMotCarteSDL(surface, texture, font);
+        return NULL;
     }
     surface=TTF_RenderUTF8_Solid(font , texte  , colorFg );
     if(surface==NULL){
         fprintf(stderr , "Erreur TTF_RenderUTF8_Blended() : %s" , TTF_GetError());
-        return NULL;
         quitEcrireMotCarteSDL(surface, texture, font);
+        return NULL;
     }
     texture=SDL_CreateTextureFromSurface(carteSDL->renderer , surface);
     if(texture==NULL){
         fprintf(stderr , "Erreur SDL_CreateTextureFromSurface() : %s" , SDL_GetError());
-        return NULL;
         quitEcrireMotCarteSDL(surface, texture, font);
+        return NULL;
     }
     quitEcrireMotCarteSDL(surface, NULL, font);
     return texture;
@@ -232,7 +232,6 @@ char *createTextWithSize(CarteSDL *carteSDL ,char *text , int tailleMax , int *n
             mot[i]='\0';
         }
         while(text[numNouveau]!=' '&&continuer2==1){
-            printf("In createTextWithSize() boucle while 2 %d %c\n" , numNouveau ,text[numNouveau]);
             if(text[numNouveau]=='\0'){
                 continuer2=0;
                 continuer=0;
