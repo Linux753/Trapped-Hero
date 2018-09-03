@@ -213,7 +213,7 @@ int initialiserLog(CarteSDL *carteSDL){
     }
     SDL_SetRenderTarget(carteSDL->renderer, carteSDL->log);
     carteSDL->rectLog=setRect(400, 200, 0, 0);
-    SDL_SetRenderDrawColor(carteSDL->renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(carteSDL->renderer, 255, 255, 255, 0);
     SDL_RenderClear(carteSDL->renderer);
     SDL_SetRenderTarget(carteSDL->renderer, NULL);
     return 0;

@@ -116,7 +116,7 @@ void setShowTile(Carte *carte , int set){
 int addLog(CarteSDL* carteSDL , char* texte){
     SDL_Surface* surface=NULL;
     SDL_Texture* texture=NULL , *textureProvisoire=NULL;
-    SDL_Color colorfg={255 , 255 , 255 , 255};
+    SDL_Color colorFg={255 , 255 , 255 , 255};
     SDL_Rect dstRect , rectTexture;
     char *ligne=NULL;
     int continuer=1 , num=0;
@@ -130,7 +130,7 @@ int addLog(CarteSDL* carteSDL , char* texte){
         return -1;
     }
     while(continuer){
-        ligne=createTextWithSize(carteSDL, texte, carteSDL->rectLog.w, &num, &rectTexture.w, &rectTexture.h);
+        ligne=createTextWithSize(carteSDL, &(texte[num]), carteSDL->rectLog.w, &num, &rectTexture.w, &rectTexture.h);
         if(ligne==NULL){
             fprintf(stderr, "Erreur createTextWithSize()\n");
             return -1;
@@ -150,7 +150,7 @@ int addLog(CarteSDL* carteSDL , char* texte){
             fprintf(stderr, "Erreur SDL_CreateTextureFromSurface() : %s\n",SDL_GetError() );
             return -1;
         }
-        dstRect=setRect(carteSDL->rectLog.w, carteSDL->rectLog.h, 0, -rectTexture.h)
+        dstRect=setRect(carteSDL->rectLog.w, carteSDL->rectLog.h, 0, -rectTexture.h);
         SDL_SetRenderTarget(carteSDL->renderer, textureProvisoire);
         SDL_SetRenderDrawColor(carteSDL->renderer, 0, 0, 0, 0);
         SDL_RenderClear(carteSDL->renderer);
@@ -158,6 +158,11 @@ int addLog(CarteSDL* carteSDL , char* texte){
             fprintf(stderr, "Erreur SDL_RenderCopy() : %s\n",SDL_GetError() );
         }
         SDL_RenderCopy(carteSDL->renderer, texture, NULL, &rectTexture);
+        SDL_RenderCopy(carteSDL->renderer, carteSDL->log,NULL,&dstRect);
+        SDL_SetRenderTarget(carteSDL->renderer, carteSDL->log);
+        SDL_RenderClear(carteSDL->renderer);
+        dstRect=setRect(carteSDL->rectLog.w,carteSDL->rectLog.h, 0,0);
+        SDL_RenderCopy(carteSDL->renderer, textureProvisoire, NULL, &dstRect);
         SDL_SetRenderTarget(carteSDL->renderer, NULL);
         if(ligne!=NULL){
             free(ligne);
@@ -165,11 +170,15 @@ int addLog(CarteSDL* carteSDL , char* texte){
         if(texture!=NULL){
             SDL_DestroyTexture(texture);
         }
+        if(surface!=NULL){
+            SDL_FreeSurface(surface);
+        }
     }
-
+    return 0;
 }
 int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
     int out=1;
+    char texte[100];
     if(carte->terrain[carte->posPerso].type==MUR||carte->terrain[carte->posPerso].type==MUR_SALLE||carte->terrain[carte->posPerso].type==MUR_CHEMIN){
         out=0;
         annulerMouvement(carte , event);
@@ -180,8 +189,9 @@ int eventPerso(CarteSDL* carteSDL , Carte *carte , int event){
         carte->terrain[carte->posPerso].tresor=-2;
     }
     else if(carte->terrain[carte->posPerso].tresor==-2&&carte->terrain[carte->posPerso].objet!=-1){
+        sprintf(texte, "You take the %s" , carteSDL->listeObjet[carte->terrain[carte->posPerso].objet].nom);
         carte->terrain[carte->posPerso].objet=takeObject(carteSDL , carte , carte->terrain[carte->posPerso].objet , carte->posPerso);
-        printf("Ici on a pris les objets\n" );
+        addLog(carteSDL, texte);
         out=1;
     }
     setShowTile(carte , SHOW);
@@ -193,6 +203,7 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
 
     setShowTile(carte , SHOW);
     position=afficherCarteZoom(carte , carteSDL , position , zoom , event.key.keysym.sym);
+    addLog(carteSDL, "You are in the first floor.");
     while(continuer){
         if(SDL_PollEvent(&event)){
             switch(event.type){
@@ -247,6 +258,12 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             break;
                         case SDLK_q :
                             continuer=0;
+                            break;
+                        case SDLK_l :
+                            if(0!=addLog(carteSDL, "Test Log Long car il faut bien meubler un peu car sinon c'est vide")){
+                                fprintf(stderr, "Erreur addLog()\n");
+                            }
+                            rafraichissement=1;
                             break;
                         case SDLK_F11 :
                             if(!event.key.repeat){
