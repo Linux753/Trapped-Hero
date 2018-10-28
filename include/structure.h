@@ -26,6 +26,7 @@
 #define SHOW 3
 #define PATH "carte/carte%d/carte1.txt"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 typedef enum Type Type;
 enum Type{
@@ -34,6 +35,10 @@ enum Type{
 typedef enum TypeAttaque TypeAttaque;
 enum TypeAttaque{
     Nulle , Arcane , Tranchant , Froid , Feu , Perforant , Contendant
+};
+typedef enum Direction Direction;
+enum Direction{
+    Up , Down , Right , Left
 };
 typedef struct Inventaire Inventaire;
 struct Inventaire{
@@ -171,6 +176,9 @@ struct CarteSDL{
     SDL_Texture *treasor;
     SDL_Texture *treasorOpen;
     SDL_Texture *personnage;
+    TTF_Font *font;
+    SDL_Texture *log;
+    SDL_Rect rectLog;
     Personnage *perso;
     Inventaire *persoInventaire;
 };
