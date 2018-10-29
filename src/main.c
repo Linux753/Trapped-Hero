@@ -17,6 +17,7 @@ int main()
     CarteSDL *carteSDL=NULL;
     Carte *carte=NULL;
     int dimension =0 , recommencer=0 , out=0 , choice=0;
+    char pathGame[50];
     srand(time(NULL));
     dimension=rand_a_b(100 , 120);
     carteSDL=initialiserCarteSDL();
@@ -34,7 +35,7 @@ int main()
         if(out==PLAY){
             carte =generateurCarteAlea(100 , 100 );
             carte->numGame=choice;
-            initGame(carte);
+            initGame(carte , carteSDL);
             generateObject(carte , carteSDL);
         }
         else if(out==LOAD){
@@ -42,6 +43,9 @@ int main()
         }
         moveCharacter(carte , carteSDL );
         printf("Quitter move character\n" );
+        sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
+        majGame(carte, carteSDL, pathGame);
+        printf("On a enregistrer la partie\n");
         enregistrerCarte(carte);
         printf("On a enregistré la carte\n");
         quitterJeu(carte , carteSDL);

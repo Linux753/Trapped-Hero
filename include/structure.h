@@ -92,6 +92,13 @@ struct Objet{
 };
 typedef struct Personnage Personnage;
 struct Personnage{
+    //Caracteristique
+    int vie;
+    int force;
+    int habilete;
+    int precision;
+    int magie;
+    int agilite;
     //Inventaire
     int *inventaireArme;
     int *inventaireBaton;
@@ -100,22 +107,16 @@ struct Personnage{
     int *inventaireParchemin;
     int nbObjets;
     int masseObjet;
-    //Caracteristique
-    int vie;
-    int force;
-    int habilete;
-    int precision;
-    int magie;
-    int agilite;
     //Objets
     Objet armure;
-    int armureNum;
+    int armureNum; 
     Objet arme;
+    int armeNum;
     int attaque;
     int attaqueMax;
     int protection;
     int poidsMax;
-    Objet argent;
+    int argent;
     //Autre
     SDL_Texture *texture;
 };

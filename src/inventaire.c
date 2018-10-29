@@ -997,13 +997,19 @@ int initialiserPersonnage(CarteSDL* carteSDL){
     }
     carteSDL->perso->masseObjet=0;
     carteSDL->perso->vie=0;
-    carteSDL->perso->force=0;
-    carteSDL->perso->habilete=0;
-    carteSDL->perso->precision=0;
-    carteSDL->perso->magie=0;
-    carteSDL->perso->agilite=0;
+    carteSDL->perso->force=10;
+    carteSDL->perso->habilete=10;
+    carteSDL->perso->precision=10;
+    carteSDL->perso->magie=10;
+    carteSDL->perso->agilite=10;
     carteSDL->perso->nbObjets=0;
+    carteSDL->perso->armureNum=0;
+    carteSDL->perso->armeNum=0;
+    carteSDL->perso->attaque=0;
+    carteSDL->perso->attaqueMax=0;
+    carteSDL->perso->protection=0;
     carteSDL->perso->poidsMax=50;
+    carteSDL->perso->argent=0;
     carteSDL->perso->texture=carteSDL->personnage;
     return 0;
 }

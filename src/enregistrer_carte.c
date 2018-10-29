@@ -15,8 +15,9 @@ void quitterInitGame(FILE *file){
         fclose(file);
     }
 }
-int majGame(Carte* carte , char* pathGame){
+int majGame(Carte* carte ,CarteSDL* carteSDL , char* pathGame){
     FILE *file=NULL;
+    int i;
     file=fopen(pathGame , "w+");
     if(file==NULL){
         fprintf(stderr , "Erreur open file %s" , pathGame);
@@ -24,11 +25,34 @@ int majGame(Carte* carte , char* pathGame){
         return -1;
     }
     fprintf(file , "nbFloor[%d] actualFloor[[%s]" , carte->nbFloor , carte->path);
-    fprintf(file , "[%d]]" , carte->floor);
+    fprintf(file , "[%d]]\n" , carte->floor);
+    fprintf(file, "perso[[%d][%d][%d][%d][%d][%d]]\n", carteSDL->perso->vie , carteSDL->perso->force , carteSDL->perso->habilete ,carteSDL->perso->precision , carteSDL->perso->magie , carteSDL->perso->agilite);
+    fprintf(file, "inventaireArme[");
+    for(i=0;i<40;i++){
+        fprintf(file, "[%d]", carteSDL->perso->inventaireArme[i]);
+    }
+    fprintf(file, "]\ninventaireBaton[");
+    for(i=0;i<40;i++){
+        fprintf(file, "[%d]", carteSDL->perso->inventaireBaton[i]);
+    }
+    fprintf(file, "]\ninventaireArmure[");
+    for(i=0;i<40;i++){
+        fprintf(file, "[%d]", carteSDL->perso->inventaireArmure[i]);
+    }
+    fprintf(file, "]\ninventairePotion[");
+    for(i=0;i<40;i++){
+        fprintf(file, "[%d]", carteSDL->perso->inventairePotion[i]);
+    }
+    fprintf(file, "]\ninventaireParchemin[");
+    for(i=0;i<40;i++){
+        fprintf(file, "[%d]", carteSDL->perso->inventaireParchemin[i]);
+    }
+    fprintf(file, "]\ninventaire[[%d][%d]]\n" , carteSDL->perso->nbObjets , carteSDL->perso->masseObjet);
+    fprintf(file, "objets[[%d][%d][%d][%d][%d][%d][%d]]\n",carteSDL->perso->armureNum , carteSDL->perso->armeNum , carteSDL->perso->attaque , carteSDL->perso->attaqueMax , carteSDL->perso->protection , carteSDL->perso->poidsMax , carteSDL->perso->argent );
     quitterInitGame(file);
     return 0;
 }
-int initGame(Carte *carte){
+int initGame(Carte *carte , CarteSDL *carteSDL){
     FILE *file=NULL;
     int nbFloor=0 , i=0;
     char pathGame[50] , pathMap[50];
@@ -48,7 +72,7 @@ int initGame(Carte *carte){
         remove(pathMap);
     }
     quitterInitGame(file);
-    majGame(carte , pathGame);
+    majGame(carte, carteSDL , pathGame);
     return 0;
 }
 int lireCarte(Carte *carte ,int choice , CarteSDL *carteSDL){
@@ -65,14 +89,14 @@ int lireCarte(Carte *carte ,int choice , CarteSDL *carteSDL){
         carte=generateurCarteAlea(100 , 100 );
         printf("%d\n" , carte->numGame);
         carte->numGame=choice;
-        initGame(carte);
+        initGame(carte , carteSDL);
         generateObject(carte , carteSDL);
     }
     else if(vide==1){
         quitterGenerateur(carte);
         carte=generateurCarteAlea(100 , 100 );
         carte->numGame=choice;
-        initGame(carte);
+        initGame(carte , carteSDL);
         generateObject(carte , carteSDL);
     }
     else{
@@ -127,6 +151,7 @@ Carte* loadGame(int choice , CarteSDL* carteSDL){
     FILE *file=NULL;
     Carte *carte=NULL;
     char path[50];
+    int i;
     carte=malloc(sizeof(Carte));
     carte->position=NULL;
     carte->blackListRoom=NULL;
@@ -144,11 +169,34 @@ Carte* loadGame(int choice , CarteSDL* carteSDL){
         return NULL;
     }
     fscanf(file , "nbFloor[%d] actualFloor[[%[^\]]s" , &(carte->nbFloor) ,&(carte->path));
-    fscanf(file , "][%d]]" , &(carte->floor));
-    fprintf(stderr , "%s\n" , carte->path);
+    fscanf(file , "][%d]]\n" , &(carte->floor));
+    fscanf(file, "perso[[%d][%d][%d][%d][%d][%d]]\n", &(carteSDL->perso->vie) , &(carteSDL->perso->force) , &(carteSDL->perso->habilete) ,&(carteSDL->perso->precision) , &(carteSDL->perso->magie) , &(carteSDL->perso->agilite));
+    fscanf(file, "inventaireArme[");
+    for(i=0;i<40;i++){
+        fscanf(file, "[%d]", &(carteSDL->perso->inventaireArme[i]));
+    }
+    fscanf(file, "]\ninventaireBaton[");
+    for(i=0;i<40;i++){
+        fscanf(file, "[%d]", &(carteSDL->perso->inventaireBaton[i]));
+    }
+    fscanf(file, "]\ninventaireArmure[");
+    for(i=0;i<40;i++){
+        fscanf(file, "[%d]", &(carteSDL->perso->inventaireArmure[i]));
+    }
+    fscanf(file, "]\ninventairePotion[");
+    for(i=0;i<40;i++){
+        fscanf(file, "[%d]", &(carteSDL->perso->inventairePotion[i]));
+    }
+    fscanf(file, "]\ninventaireParchemin[");
+    for(i=0;i<40;i++){
+        fscanf(file, "[%d]", &(carteSDL->perso->inventaireParchemin[i]));
+    }
+    fscanf(file, "]\ninventaire[[%d][%d]]\n" , &(carteSDL->perso->nbObjets) , &(carteSDL->perso->masseObjet));
+    fscanf(file, "objets[[%d][%d][%d][%d][%d][%d][%d]]\n",&(carteSDL->perso->armureNum) , &(carteSDL->perso->armeNum) , &(carteSDL->perso->attaque) , &(carteSDL->perso->attaqueMax) , &(carteSDL->perso->protection) , &(carteSDL->perso->poidsMax) , &(carteSDL->perso->argent) );
+
     lireCarte(carte , choice , carteSDL);
     quitterLoadGame(NULL , file);
-    fprintf(stderr , "%d" , carte->terrain[carte->posPerso].voile);
+
     return carte;
 }
 

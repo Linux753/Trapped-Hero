@@ -20,7 +20,7 @@ Carte* loadFloor(Carte* carte , CarteSDL* carteSDL, int change ){
     numGame=carte->numGame;
     sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
     sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
-    majGame(carte, pathGame);
+    majGame(carte, carteSDL , pathGame);
     quitterGenerateur(carte);
     carte=loadGame(numGame , carteSDL);
     return carte;
@@ -44,7 +44,7 @@ Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
     sprintf(carte->path , "carte/carte%d/carte%d.txt" , carte->numGame , carte->floor);
     sprintf(pathGame , "carte/carte%d/game.gm" , carte->numGame);
     generateObject(carte , carteSDL);
-    majGame(carte , pathGame);
+    majGame(carte ,carteSDL, pathGame);
     return carte;
 }
 Carte* floorUp(Carte* carte , CarteSDL *carteSDL){
@@ -336,12 +336,12 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
             }
         }
         else{
-            SDL_Delay(50);
+            SDL_Delay(25);
         }
         clock_gettime(CLOCK_MONOTONIC , &structTimeNew);
         timeNew=structTimeNew.tv_nsec*0.000000001;
         timeNew=structTimeNew.tv_sec+timeNew;
-        if(timeNew-timeOld>=0.13&&timeNew-timeOrigin>=0.5){
+        if(timeNew-timeOld>=0.13&&timeNew-timeOrigin>=0.25){
             if(keyboard[SDL_SCANCODE_UP]){
                 rafraichissement+=bouger(carte, carteSDL, Up , NULL);
             }

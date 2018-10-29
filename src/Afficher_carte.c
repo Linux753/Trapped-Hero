@@ -212,31 +212,6 @@ int loadTileset(CarteSDL *carteSDL){
     }
     return out;
 }
-int reajusterCadrage(Carte *carte ,int position ,  int windowH,int  windowW , int tileNbW ,int tileNbH ){
-    int i=0 , continuer=1;
-    while(carte->largeur*carte->hauteur<position+carte->largeur*tileNbH){
-        position=position-carte->largeur;
-        //position=position-((position+carte->largeur*tileNbH)-((carte->largeur*carte->hauteur)-1));
-    }
-    if((position+1)%carte->largeur!=0){
-        i=position+1;
-        while(i<position+tileNbW&&continuer==1){
-            if(carte->terrain[i].type==MUR){
-                position=position-(tileNbW-i);
-                //i--;
-                continuer=0;
-                printf("On a reculé de : %d\n" , position-(tileNbW-i));
-            }
-            i++;
-        }
-      //  printf("Valeur de pos modul carte->largeur: %d" , position+1%carte->largeur);
-    }
-    else{
-        printf("\nRecul total\nAutre info pour le passsage : %d\n\n" , tileNbW);
-        position=position-tileNbW;
-    }
-    return position;
-}
 int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int taille  , SDL_Keycode event){
     int positionTheorique=0,  windowH=0, windowW=0 , tileNbW=0 , tileNbH=0 , i=position , y=0 , compteurW=0 , compteurH=0 ;
     SDL_Rect rect={0 , 0 , 0 , 0};
@@ -248,10 +223,10 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
     tileNbW=windowW/taille;
     if(position==99999){
         position=carte->posPerso-(tileNbW/2+((tileNbH/2)*carte->largeur));
-        //position=reajusterCadrage(carte , position , windowH , windowW , tileNbW , tileNbH);
     }
+    position=carte->posPerso-(tileNbW/2+((tileNbH/2)*carte->largeur));
     positionTheorique=position+(tileNbW/2+((tileNbH/2)*carte->largeur));
-    if((position%carte->largeur==0)||(position+(tileNbH*carte->largeur)>carte->largeur*(carte->hauteur-1))||(position<carte->largeur)||((position+tileNbW+1)%carte->largeur==0)){
+    /*if((position%carte->largeur==0)||(position+(tileNbH*carte->largeur)>carte->largeur*(carte->hauteur-1))||(position<carte->largeur)||((position+tileNbW+1)%carte->largeur==0)){
         if(position+(tileNbH*carte->largeur)>carte->largeur*(carte->hauteur-1)){
             if(carte->posPerso<positionTheorique+(positionTheorique%carte->largeur)){
                 position-=carte->largeur;
@@ -297,7 +272,7 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
             }
         }
     }
-    else if((carte->posPerso>positionTheorique+1&&carte->posPerso!=positionTheorique+carte->largeur)
+    if((carte->posPerso>positionTheorique+1&&carte->posPerso!=positionTheorique+carte->largeur)
     ||(carte->posPerso<positionTheorique-1&&carte->posPerso!=positionTheorique-carte->largeur)){
         switch(event){
             case SDLK_UP :
@@ -321,7 +296,7 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
                   }
                 break;
         }
-    }
+    }*/
     i=position;
         SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38 , 100);
         while(compteurH<tileNbH+1){
