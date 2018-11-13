@@ -268,12 +268,18 @@ int moveCharacter(Carte *carte,CarteSDL* carteSDL){
                             }
                             break;
                         case SDLK_KP_PLUS :
-                            zoom++;
+                            if(zoom<75){
+                                zoom++;
+                            }
+                            printf("%d\n", zoom);
                             rafraichissement=1;
                             position=99999;
                             break;
                         case SDLK_KP_MINUS :
-                            zoom--;
+                            if(zoom>12){
+                                zoom--;
+                            }
+                            printf("%d\n",zoom );
                             rafraichissement=1;
                             position=99999;
                             break;
