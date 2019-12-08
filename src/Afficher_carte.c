@@ -214,16 +214,18 @@ int loadTileset(CarteSDL *carteSDL){
 }
 int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int taille  , SDL_Keycode event){
     int positionTheorique=0,  windowH=0, windowW=0 , tileNbW=0 , tileNbH=0 , i=position , y=0 , compteurW=0 , compteurH=0 ;
+    int highOfI, highTheoric;
     SDL_Rect rect={0 , 0 , 0 , 0};
     SDL_Texture *texture=NULL;
     SDL_GetWindowSize(carteSDL->window , &windowW , &windowH);
-    SDL_SetRenderDrawColor(carteSDL->renderer , 255 , 255 , 255 , 255);
+    SDL_SetRenderDrawColor(carteSDL->renderer , 0 , 0 , 0 , 255);
     SDL_RenderClear(carteSDL->renderer );
     tileNbH=windowH/taille;
     tileNbW=windowW/taille;
     if(position==99999){
         position=carte->posPerso-(tileNbW/2+((tileNbH/2)*carte->largeur));
     }
+    highTheoric=(carte->posPerso/carte->largeur)-(tileNbH/2);
     position=carte->posPerso-(tileNbW/2+((tileNbH/2)*carte->largeur));
     positionTheorique=position+(tileNbW/2+((tileNbH/2)*carte->largeur));
     /*if((position%carte->largeur==0)||(position+(tileNbH*carte->largeur)>carte->largeur*(carte->hauteur-1))||(position<carte->largeur)||((position+tileNbW+1)%carte->largeur==0)){
@@ -298,14 +300,15 @@ int afficherCarteZoom(Carte *carte , CarteSDL *carteSDL , int position , int tai
         }
     }*/
     i=position;
-        SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38 , 100);
-        while(compteurH<tileNbH+1){
+    SDL_SetRenderDrawColor(carteSDL->renderer , 38 , 38 , 38 , 100);
+    while(compteurH<tileNbH+1){
         rect.y=y;
         rect.x=compteurW*taille;
         rect.w=taille;
         rect.h=taille;
         //Loading tile
-        if(carte->terrain[i].voile==HIDDEN||i>=carte->largeur*carte->hauteur||i<0){
+        highOfI=(i/carte->largeur);
+        if(carte->terrain[i].voile==HIDDEN||i>=carte->largeur*carte->hauteur||i<0||highOfI!=compteurH+highTheoric){
             SDL_RenderCopy(carteSDL->renderer , carteSDL->vide , NULL  , &rect );
         }
         else{
