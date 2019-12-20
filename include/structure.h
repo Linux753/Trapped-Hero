@@ -109,7 +109,7 @@ struct Personnage{
     int masseObjet;
     //Objets
     Objet armure;
-    int armureNum; 
+    int armureNum;
     Objet arme;
     int armeNum;
     int attaque;
@@ -149,6 +149,7 @@ struct Carte{
     int *blackListRoom;
     int nbBlackListRoom;
     int posPerso;
+    float posFloatPerso;
     int numGame;
     int floor;
     int nbFloor;

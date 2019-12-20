@@ -23,6 +23,7 @@ Carte* loadFloor(Carte* carte , CarteSDL* carteSDL, int change ){
     majGame(carte, carteSDL , pathGame);
     quitterGenerateur(carte);
     carte=loadGame(numGame , carteSDL);
+    addLog(carteSDL, "You are now in an other floor");
     return carte;
 }
 Carte* floorDown(Carte* carte , CarteSDL *carteSDL){
